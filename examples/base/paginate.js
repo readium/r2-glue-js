@@ -19,6 +19,7 @@
     console.log("Page is now: "+page);
     console.log("New position: "+page*(window.innerWidth));
     document.documentElement.scrollLeft = page*(window.innerWidth);
+    document.body.scrollLeft = page*(window.innerWidth);
   }));
   
   document.body.addEventListener('keydown', function(e) {
@@ -32,6 +33,7 @@
     console.log("Page is now: "+page);
     console.log("New position: "+page*(window.innerWidth));
     document.documentElement.scrollLeft = page*(window.innerWidth);
+    document.body.scrollLeft = page*(window.innerWidth);
   });
 
 }());
