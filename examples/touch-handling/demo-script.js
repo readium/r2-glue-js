@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       testPicker = document.getElementById("testPicker");
 
   var updateSrc = function(url) {
-    let prefix = "src/";
+    var prefix = "src/";
     frame.src = prefix + url;
   }
 
