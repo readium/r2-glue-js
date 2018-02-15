@@ -18,12 +18,14 @@
       width: 100%;
       align-items: center;
       justify-content: center;
+      padding: 30px 0 0 0;
     }
     
     iframe {
       width: calc(60em + 40px);
       max-width: 90%;
       height: 90vh;
+      max-height: 100%;
       border: 0;
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -33,9 +35,25 @@
          You need to allowtransparency on the iframe though (and sanitize authors’ CSS) */
       background-color: transparent;
     }
+    select {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
   </style>
 </head>
 <body>
+  <select id="testPicker">
+      <option value="test-001.xhtml" selected="">Form elements</option> 
+      <option value="test-002.xhtml">Contenteditable div</option>
+      <option value="test-003.xhtml">Scripted form element</option> 
+      <option value="test-004.xhtml">Audio controls with div</option> 
+      <option value="test-005.xhtml">Audio controls with buttons</option> 
+      <option value="test-006.xhtml">Links</option> 
+      <option value="test-007.xhtml">Layout change</option> 
+      <option value="test-008.xhtml">Details element</option> 
+      <option value="test-009.xhtml">Canvas interaction</option> 
+  </select>
   <iframe src="src/test-001.xhtml" id="page" allowtransparency="true" scrolling="no"></iframe>
   <script type="text/javascript" src="demo-script.js"></script>
 </body>

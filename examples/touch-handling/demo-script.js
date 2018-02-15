@@ -1,5 +1,12 @@
 document.addEventListener("DOMContentLoaded", function(event) {
-  var frame = document.getElementById("page");
+  var frame = document.getElementById("page"),
+      testPicker = document.getElementById("testPicker");
+
+  var updateSrc = function(url) {
+    let prefix = "src/";
+    frame.src = prefix + url;
+  }
+
   var scrollLeft = function() {
     var gap = parseInt(window.getComputedStyle(frame.contentWindow.document.documentElement).getPropertyValue("column-gap"));
     frame.contentWindow.scrollTo(frame.contentWindow.scrollX - frame.contentWindow.innerWidth - gap, 0);
@@ -25,4 +32,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
       scrollLeft();
     }
   });
+
+  if (testPicker) {
+    testPicker.addEventListener("change", function(e) {
+      var newValue = this.value;
+      updateSrc(newValue);
+    }, false);
+  }
 })
