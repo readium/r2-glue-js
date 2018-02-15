@@ -35,6 +35,11 @@
          You need to allowtransparency on the iframe though (and sanitize authors’ CSS) */
       background-color: transparent;
     }
+    @media screen and (min-device-width: 576px) {
+      iframe {
+        max-width: 95%;
+      }
+    }
     select {
       position: absolute;
       top: 10px;
