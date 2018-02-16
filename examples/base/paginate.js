@@ -4,6 +4,7 @@
 
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   var isIDevice = navigator.platform.substr(0,2) === 'iP';
+  var isAndroid = /(android)/i.test(navigator.userAgent);
   var root = undefined;
   var page = 0;
 
@@ -13,10 +14,12 @@
     var root = document.documentElement;
   };
 
-  document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
-  window.addEventListener("resize", function() {
+  if (!isAndroid) {
     document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
-  }, false);
+    window.addEventListener("resize", function() {
+      document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
+    }, false);
+  }
 
   var clickHandler = function(e) {
     var clickX = e.pageX;
@@ -34,11 +37,7 @@
   }
   
   if (isSafari && isIDevice) {
-    document.documentElement.style.maxHeight = window.innerHeight+"px";
     document.addEventListener("touchend", clickHandler, false);
-    window.addEventListener("resize", function() {
-      document.documentElement.style.maxHeight = window.innerHeight+"px";
-    }, false);
   } else {
     window.addEventListener("click", clickHandler, false);
   }
