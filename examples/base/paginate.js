@@ -14,12 +14,30 @@
     var root = document.documentElement;
   };
 
-  if (!isAndroid) {
+  var debounce = function(func, wait, immediate) {
+    var timeout;
+    return function() {
+      var context = this, args = arguments;
+      var later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
+  };
+
+  var updateHeight = debounce(function() {
     document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
-    window.addEventListener("resize", function() {
-      document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
-    }, false);
-  }
+  }, 250);
+
+  if (!isAndroid || !isIDevice) {
+    document.documentElement.style.maxHeight = document.documentElement.clientHeight+"px";
+    document.documentElement.style.overflowY = "hidden";
+    window.addEventListener("resize", updateHeight, false);
+  };
 
   var clickHandler = function(e) {
     var clickX = e.pageX;
@@ -34,13 +52,13 @@
     console.log("Page is now: "+page);
     console.log("New position: "+page*(window.innerWidth));
     root.scrollLeft = page*(window.innerWidth);
-  }
+  };
   
   if (isSafari && isIDevice) {
     document.addEventListener("touchend", clickHandler, false);
   } else {
     window.addEventListener("click", clickHandler, false);
-  }
+  };
 
   window.addEventListener('keydown', function(e) {
     e.preventDefault();
