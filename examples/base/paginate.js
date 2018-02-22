@@ -5,10 +5,11 @@
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   var isIDevice = navigator.platform.substr(0,2) === 'iP';
   var isAndroid = /(android)/i.test(navigator.userAgent);
+  var isWebview = /(wv)/i.test(navigator.userAgent);
   var root = undefined;
   var page = 0;
 
-  if (isSafari) {
+  if (isSafari || isAndroid && isWebview) {
     var root = document.body;
   } else {
     var root = document.documentElement;
