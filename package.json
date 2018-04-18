@@ -1,0 +1,74 @@
+{
+  "name": "r2-glue-js",
+  "version": "0.0.0",
+  "description": "This repo contains Javascript resources that are injected by a Readium-2 streamer or navigator.",
+  "keywords": [
+    "readium",
+    "readium2",
+    "epub",
+    "navigator",
+    "javascript",
+    "library",
+    "utils",
+    "pagination",
+    "scrolling",
+    "touch",
+    "pointer",
+    "gestures",
+    "swiping",
+    "pages",
+    "location",
+    "locator",
+    "cfi",
+    "footnotes",
+    "links",
+    "search",
+    "postmessage",
+    "interface",
+    "events"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/readium/r2-glue-js.git"
+  },
+  "author": {
+    "name": "Evident Point",
+    "organization": "Evident Point",
+    "url": "http://github.com/evidentpoint/"
+  },
+  "license": "BSD-3-Clause",
+  "licenses": [
+    {
+      "type": "BSD-3-Clause",
+      "url": "http://opensource.org/licenses/BSD-3-Clause"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/readium/r2-glue-js/issues"
+  },
+  "homepage": "https://github.com/readium/r2-glue-js#readme",
+  "main": "./dist/readium-glue.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts' 'test/**/*.ts'",
+    "watch": "npm run build -- -w",
+    "start": "npm run watch -- --config rollup.serve.config.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "npm-run-all": "^4.1.2",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.58.0",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-serve": "^0.4.2",
+    "rollup-plugin-typescript2": "^0.13.0",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.8.0",
+    "tslint-eslint-rules": "^5.1.0",
+    "tslint-microsoft-contrib": "^5.0.3",
+    "typescript": "^2.8.1"
+  }
+}

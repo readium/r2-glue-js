@@ -1,0 +1,1 @@
+{"version":3,"file":"readium-glue.js","sources":["../src/index.ts"],"sourcesContent":["export const foo = 'bar';\n"],"names":[],"mappings":";;;KAAa,GAAG,GAAG,KAAK;;;;;;;;;;"}
