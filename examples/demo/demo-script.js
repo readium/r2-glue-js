@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var updateSrc = function(url) {
     var prefix = "src/";
     frame.src = prefix + url;
+    iframe.onload = function() {
+      iframe.contentDocument.head.appendChild()
+    }
   }
 
   var scrollLeft = function() {
@@ -38,5 +41,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
       var newValue = this.value;
       updateSrc(newValue);
     }, false);
+    updateSrc(testPicker.selectedOptions[0].value);
   }
 })

@@ -10,7 +10,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
-    "declaration": true,
+    "declaration": false,
     "strict": true,
     "sourceMap": true,
     "outDir": "./dist/"

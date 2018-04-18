@@ -47,14 +47,14 @@
     "url": "https://github.com/readium/r2-glue-js/issues"
   },
   "homepage": "https://github.com/readium/r2-glue-js#readme",
-  "main": "./dist/readium-glue.js",
+  "main": "./dist/ReadiumGlue-senders.js",
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "watch": "npm run build -- -w",
-    "start": "npm run watch -- --config rollup.serve.config.js"
+    "start": "SERVE=true npm run watch"
   },
   "dependencies": {},
   "devDependencies": {
