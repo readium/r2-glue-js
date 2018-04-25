@@ -10,11 +10,36 @@
     "missing-jsdoc": false,
     "no-relative-imports": false,
     "export-name": false,
-    "typedef": [true, "call-signature", "parameter", "member-variable-declaration"],
-    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}]
+    "typedef": [
+      true,
+      "call-signature",
+      "parameter",
+      "member-variable-declaration"
+    ],
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "ter-arrow-parens": [
+      true,
+      "always"
+    ],
+    "function-name": [
+      true,
+      {
+        "method-regex": "^[a-z][\\w\\d]+$",
+        "private-method-regex": "^(\\[.*?\\]|[a-z$][\\w\\d]+)$",
+        "protected-method-regex": "^[a-z][\\w\\d]+$",
+        "static-method-regex": "^[A-Z_\\d]+$",
+        "function-regex": "^[a-z][\\w\\d]+$"
+      }
+    ]
   },
   "rulesDirectory": [],
   "linterOptions": {
-      "exclude": []
+    "exclude": []
   }
 }
