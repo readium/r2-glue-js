@@ -2,9 +2,7 @@ import { Dispatcher } from '../../lib/dispatcher';
 import { IMessageResponse, MessageHandler } from '../../lib/messageHandler';
 import { EventHandlingMessage, IAddEventListenerOptions } from './common';
 
-(() => new Dispatcher('event-handling', EventHandling))();
-
-class EventHandling extends MessageHandler {
+export class EventHandler extends MessageHandler {
   private [EventHandlingMessage.AddEventListener](
     callback: IMessageResponse,
     target: string,

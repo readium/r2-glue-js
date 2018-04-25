@@ -1,4 +1,5 @@
-import { name, version } from '../../package.json';
+const PROTOCOL_NAME = 'r2-glue-js';
+const PROTOCOL_VERSION = '1.0.0';
 
 export interface IMessage {
   readonly protocol?: string;
@@ -22,8 +23,8 @@ export class Message implements IMessage {
   constructor(message: IMessage, transitID?: string) {
     this.type = message.type;
     this.parameters = message.parameters;
-    this.protocol = name;
-    this.version = version;
+    this.protocol = PROTOCOL_NAME;
+    this.version = PROTOCOL_VERSION;
     this.transitId = transitID;
   }
 
