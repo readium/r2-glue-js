@@ -1,6 +1,6 @@
 export enum EventHandlingMessage {
   AddEventListener = 'ADD_EVENT_LISTENER',
-  Event = 'EVENT',
+  OnEvent = 'ON_EVENT',
 }
 
 export interface IAddEventListenerOptions extends AddEventListenerOptions {
