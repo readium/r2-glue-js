@@ -1,5 +1,8 @@
-var ReadiumGlue = (function (exports) {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+    (factory((global.ReadiumGlue = {})));
+}(this, (function (exports) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -77,37 +80,62 @@ var ReadiumGlue = (function (exports) {
         return Receiver;
     }());
 
-    var Dispatcher = /** @class */ (function (_super) {
-        __extends(Dispatcher, _super);
-        function Dispatcher(namespace, handlerType) {
+    var Client = /** @class */ (function (_super) {
+        __extends(Client, _super);
+        function Client(namespace, targetWindow) {
             var _this = _super.call(this, namespace) || this;
-            _this.handler = new handlerType();
+            _this.targetWindow = targetWindow;
+            _this.messageCorrelations = {};
             return _this;
         }
-        Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this.handler[message.type].apply(this, [
-                function () {
-                    var responseParams = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        responseParams[_i] = arguments[_i];
-                    }
-                    sendMessage(message.type + "$response", responseParams);
-                }
-            ].concat(message.parameters));
+        Client.prototype.sendMessage = function (type, parameters, responseCallback) {
+            var message = new Message(type, parameters);
+            if (responseCallback) {
+                var correlations = this.getCorrelations(message.correlationId);
+                correlations.push(responseCallback);
+            }
+            this.targetWindow.postMessage(message, this.targetWindow.location.origin);
         };
-        return Dispatcher;
+        Client.prototype.processMessage = function (message, sendMessage) {
+            if (!message.correlationId) {
+                return;
+            }
+            var correlations = this.getCorrelations(message.correlationId);
+            correlations.forEach(function (callback) {
+                callback.apply(void 0, message.parameters);
+            });
+        };
+        Client.prototype.getCorrelations = function (id) {
+            if (!this.messageCorrelations[id]) {
+                this.messageCorrelations[id] = [];
+            }
+            return this.messageCorrelations[id];
+        };
+        return Client;
     }(Receiver));
 
-    var MessageHandler = /** @class */ (function () {
-        function MessageHandler() {
+    var EventHandlingMessage;
+    (function (EventHandlingMessage) {
+        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
+    })(EventHandlingMessage || (EventHandlingMessage = {}));
+
+    var EventHandling = /** @class */ (function (_super) {
+        __extends(EventHandling, _super);
+        function EventHandling(targetWindow) {
+            return _super.call(this, 'event-handling', targetWindow) || this;
         }
-        return MessageHandler;
-    }());
+        EventHandling.prototype.addEventListener = function (target, eventType, listener, options) {
+            if (options === void 0) { options = {}; }
+            this.sendMessage(EventHandlingMessage.AddEventListener, [target, eventType, options], function (event) {
+                listener(event);
+            });
+        };
+        return EventHandling;
+    }(Client));
 
-    exports.Dispatcher = Dispatcher;
-    exports.MessageHandler = MessageHandler;
+    exports.EventHandling = EventHandling;
 
-    return exports;
+    Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
-//# sourceMappingURL=ReadiumGlue-base.js.map
+})));
+//# sourceMappingURL=ReadiumGlue.js.map

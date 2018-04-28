@@ -5,8 +5,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
   var updateSrc = function(url) {
     var prefix = "src/";
     frame.src = prefix + url;
-    iframe.onload = function() {
-      iframe.contentDocument.head.appendChild()
+    frame.onload = function() {
+      var script = frame.contentDocument.createElement("script");
+      script.setAttribute("src", "/dist/ReadiumGlue-payload.js");
+      frame.contentDocument.head.appendChild(script);
     }
   }
 

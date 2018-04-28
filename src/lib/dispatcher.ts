@@ -1,33 +1,21 @@
-import { IMessage, IMessageEvent, Message } from './message';
-import { uuid } from './util';
+import { IMessage } from './message';
 import { MessageHandler } from './messageHandler';
+import { sendMessage, Receiver } from './receiver';
 
-export class Dispatcher {
+export class Dispatcher extends Receiver {
   private handler: MessageHandler;
 
-  public constructor(namespace: string, handlerType: { new (): MessageHandler }) {
+  public constructor(namespace: string, handlerType: { new(): MessageHandler }) {
+    super(namespace);
     this.handler = new handlerType();
+  }
 
-    window.addEventListener('message', (event: IMessageEvent) => {
-      const request = event.data;
-
-      if (!Message.validate(request) || request.namespace !== namespace) {
-        return;
-      }
-
-      this.handler[request.type].apply(this, [
-        ...request.parameters,
-        (response: IMessage) => {
-          if (!event.source) {
-            return;
-          }
-
-          event.source.postMessage(
-            new Message(response, request.transitId || uuid()),
-            event.origin,
-          );
-        },
-      ]);
-    });
+  protected processMessage(message: IMessage, sendMessage: sendMessage): void {
+    this.handler[message.type].apply(this, [
+      (...responseParams: any[]) => {
+        sendMessage(`${message.type}$response`, responseParams);
+      },
+      ...message.parameters,
+    ]);
   }
 }

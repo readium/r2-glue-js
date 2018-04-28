@@ -1,10 +1,9 @@
-import { Dispatcher } from '../../lib/dispatcher';
-import { IMessageResponse, MessageHandler } from '../../lib/messageHandler';
-import { EventHandlingMessage, IAddEventListenerOptions } from './common';
+import { MessageHandler, messageResponseCallback } from '../../lib';
+import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
 export class EventHandler extends MessageHandler {
   private [EventHandlingMessage.AddEventListener](
-    callback: IMessageResponse,
+    callback: messageResponseCallback,
     target: string,
     eventType: string,
     options: IAddEventListenerOptions,
@@ -31,7 +30,7 @@ export class EventHandler extends MessageHandler {
             event.stopImmediatePropagation();
           }
 
-          callback(EventHandlingMessage.OnEvent, event);
+          callback(event);
         });
       });
     }

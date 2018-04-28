@@ -1,6 +1,7 @@
 import typescript2 from 'rollup-plugin-typescript2';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
+import multiEntry from 'rollup-plugin-multi-entry';
 import serve from 'rollup-plugin-serve';
 import path from 'path';
 
@@ -8,43 +9,41 @@ const pkg = require('./package.json');
 
 const plugins = [resolve(), commonjs(), typescript2()];
 
-const baseReceiverInput = './src/lib/receiver.ts';
+const baseModuleEntries = ['./src/lib/dispatcher.ts','./src/lib/messageHandler.ts'];
 
-const buildReceiverEntry = (input, name, exportName) => {
+const buildModuleEntry = (input) => {
+  const moduleName = path.basename(path.resolve(input, '..'));
   return {
     input,
     output: {
-      file: `./dist/modules/ReadiumGlue-${name}.js`,
+      file: `./dist/modules/ReadiumGlue-${moduleName}.js`,
       format: 'iife',
-      name: `ReadiumGlue.${exportName}`,
+      name: `ReadiumGlue.${moduleName}`,
       sourcemap: true,
       globals: {
-        [path.resolve(baseReceiverInput)]: 'ReadiumGlue',
+        [path.resolve(baseModuleEntries[0])]: 'ReadiumGlue',
+        [path.resolve(baseModuleEntries[1])]: 'ReadiumGlue',
       },
     },
-    external: [path.resolve(baseReceiverInput)],
+    external: [path.resolve(baseModuleEntries[0]), path.resolve(baseModuleEntries[1])],
     plugins,
   };
 };
 
 export default [
   {
-    input: baseReceiverInput,
+    input: baseModuleEntries,
     output: {
       file: './dist/modules/ReadiumGlue-base.js',
       format: 'iife',
       name: 'ReadiumGlue',
       sourcemap: true,
     },
-    plugins,
+    plugins: [...plugins, multiEntry()],
   },
-  buildReceiverEntry(
-    './src/modules/event-handling/receiver.ts',
-    'event-handling',
-    'EventHandlingReceiver',
-  ),
+  buildModuleEntry('./src/modules/eventHandling/index.ts'),
   {
-    input: './src/senders.ts',
+    input: './src/clients.ts',
     output: [
       {
         file: pkg.main,
@@ -56,10 +55,10 @@ export default [
     plugins,
   },
   {
-    input: './src/receivers.ts',
+    input: './src/handlers.ts',
     output: [
       {
-        file: './dist/ReadiumGlue-receivers.js',
+        file: './dist/ReadiumGlue-payload.js',
         format: 'iife',
         name: 'ReadiumGlue',
         sourcemap: true,
@@ -67,23 +66,23 @@ export default [
     ],
     plugins: process.env.SERVE
       ? [
-          ...plugins,
-          serve({
-            // Launch in browser (default: false)
-            open: true,
+        ...plugins,
+        serve({
+          // Launch in browser (default: false)
+          open: true,
 
-            // Multiple folders to serve from
-            contentBase: ['.', 'examples/demo'],
+          // Multiple folders to serve from
+          contentBase: ['.', 'examples/demo'],
 
-            // Options used in setting up server
-            host: '0.0.0.0',
-            port: 8080,
+          // Options used in setting up server
+          host: '0.0.0.0',
+          port: 8080,
 
-            headers: {
-              'Cache-Control': 'no-cache, must-revalidate',
-            },
-          }),
-        ]
+          headers: {
+            'Cache-Control': 'no-cache, must-revalidate',
+          },
+        }),
+      ]
       : plugins,
   },
 ];

@@ -104,10 +104,52 @@ var ReadiumGlue = (function (exports) {
         return MessageHandler;
     }());
 
-    exports.Dispatcher = Dispatcher;
-    exports.MessageHandler = MessageHandler;
+    var EventHandlingMessage;
+    (function (EventHandlingMessage) {
+        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
+    })(EventHandlingMessage || (EventHandlingMessage = {}));
+
+    var EventHandler = /** @class */ (function (_super) {
+        __extends(EventHandler, _super);
+        function EventHandler() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        EventHandler.prototype[EventHandlingMessage.AddEventListener] = function (callback, target, eventType, options) {
+            var eventTargets;
+            if (target === '@window') {
+                eventTargets = [window];
+            }
+            else if (target === '@document') {
+                eventTargets = [document];
+            }
+            else {
+                eventTargets = document.querySelectorAll(target);
+            }
+            if (eventTargets && eventTargets.length) {
+                Array.prototype.forEach.call(eventTargets, function (resolvedTarget) {
+                    resolvedTarget.addEventListener(eventType, function (event) {
+                        if (options.preventDefault) {
+                            event.preventDefault();
+                        }
+                        if (options.stopPropagation) {
+                            event.stopPropagation();
+                        }
+                        if (options.stopImmediatePropagation) {
+                            event.stopImmediatePropagation();
+                        }
+                        callback(event);
+                    });
+                });
+            }
+        };
+        return EventHandler;
+    }(MessageHandler));
+
+    var index = new Dispatcher('event-handling', EventHandler);
+
+    exports.eventHandling = index;
 
     return exports;
 
 }({}));
-//# sourceMappingURL=ReadiumGlue-base.js.map
+//# sourceMappingURL=ReadiumGlue-payload.js.map

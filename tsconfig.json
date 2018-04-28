@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "plugins": [
+      { "name": "tslint-language-service"}
+    ],
     "lib": [
       "es2015",
       "dom"
