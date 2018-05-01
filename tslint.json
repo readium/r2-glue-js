@@ -31,11 +31,16 @@
       true,
       {
         "method-regex": "^[a-z][\\w\\d]+$",
-        "private-method-regex": "^(\\[.*?\\]|[a-z$][\\w\\d]+)$",
+        "private-method-regex": "^(\\[.*?\\]|_[a-z$][\\w\\d]+)$",
         "protected-method-regex": "^[a-z][\\w\\d]+$",
         "static-method-regex": "^[a-z][\\w\\d]+$",
         "function-regex": "^[a-z][\\w\\d]+$"
       }
+    ],
+    "variable-name": [
+      true,
+      "check-format",
+      "allow-leading-underscore"
     ]
   },
   "rulesDirectory": [],

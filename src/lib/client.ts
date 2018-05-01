@@ -4,14 +4,16 @@ import { sendMessage, Receiver } from './receiver';
 import { Message } from './message';
 
 export abstract class Client extends Receiver {
-  private targetWindow: Window;
+  private readonly _targetWindow: Window;
+  private readonly _namespace: string;
 
-  private readonly messageCorrelations: { [id: string]: messageResponseCallback[] };
+  private readonly _messageCorrelations: { [id: string]: messageResponseCallback[] };
 
   protected constructor(namespace: string, targetWindow: Window) {
     super(namespace);
-    this.targetWindow = targetWindow;
-    this.messageCorrelations = {};
+    this._namespace = namespace;
+    this._targetWindow = targetWindow;
+    this._messageCorrelations = {};
   }
 
   protected sendMessage(
@@ -19,13 +21,13 @@ export abstract class Client extends Receiver {
     parameters: any[],
     responseCallback?: messageResponseCallback,
   ): void {
-    const message = new Message(type, parameters);
+    const message = new Message(this._namespace, type, parameters);
     if (responseCallback) {
-      const correlations = this.getCorrelations(message.correlationId);
+      const correlations = this._getCorrelations(message.correlationId);
       correlations.push(responseCallback);
     }
 
-    this.targetWindow.postMessage(message, this.targetWindow.location.origin);
+    this._targetWindow.postMessage(message, this._targetWindow.location.origin);
   }
 
   protected processMessage(message: IMessage, sendMessage: sendMessage): void {
@@ -33,17 +35,17 @@ export abstract class Client extends Receiver {
       return;
     }
 
-    const correlations = this.getCorrelations(message.correlationId);
+    const correlations = this._getCorrelations(message.correlationId);
     correlations.forEach((callback) => {
       callback(...message.parameters);
     });
   }
 
-  private getCorrelations(id: string): messageResponseCallback[] {
-    if (!this.messageCorrelations[id]) {
-      this.messageCorrelations[id] = [];
+  private _getCorrelations(id: string): messageResponseCallback[] {
+    if (!this._messageCorrelations[id]) {
+      this._messageCorrelations[id] = [];
     }
 
-    return this.messageCorrelations[id];
+    return this._messageCorrelations[id];
   }
 }
