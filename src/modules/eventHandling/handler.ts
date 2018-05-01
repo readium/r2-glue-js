@@ -1,3 +1,5 @@
+import finder from '@medv/finder';
+
 import { MessageHandler, messageResponseCallback } from '../../lib';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
@@ -6,6 +8,7 @@ export class EventHandler extends MessageHandler {
     callback: messageResponseCallback,
     target: string,
     eventType: string,
+    properties: string[],
     options: IAddEventListenerOptions,
   ): void {
     let eventTargets;
@@ -30,7 +33,28 @@ export class EventHandler extends MessageHandler {
             event.stopImmediatePropagation();
           }
 
-          callback(event);
+          const pluckedEventArgs: any = {};
+          properties.forEach((key) => {
+            pluckedEventArgs[key] = (event as any)[key];
+          });
+
+          callback(
+            JSON.parse(
+              JSON.stringify(pluckedEventArgs, (key, value) => {
+                if (value instanceof Window) {
+                  return '@window';
+                }
+                if (value instanceof Document) {
+                  return '@document';
+                }
+                if (value instanceof Node) {
+                  // Generate a CSS selector for the Node
+                  return finder(value);
+                }
+                return value;
+              }),
+            ),
+          );
         });
       });
     }

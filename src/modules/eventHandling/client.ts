@@ -9,12 +9,13 @@ export class EventHandling extends Client {
   public addEventListener(
     target: string,
     eventType: string,
+    properties: string[],
     listener: EventListener,
     options: IAddEventListenerOptions = {},
   ): void {
     this.sendMessage(
       EventHandlingMessage.AddEventListener,
-      [target, eventType, options],
+      [target, eventType, properties, options],
       (event) => {
         listener(event);
       },

@@ -56,6 +56,9 @@
     "watch": "npm run build -- -w",
     "start": "SERVE=true npm run watch"
   },
+  "dependencies": {
+    "@medv/finder": "^1.0.1"
+  },
   "devDependencies": {
     "npm-run-all": "^4.1.2",
     "rimraf": "^2.6.2",
