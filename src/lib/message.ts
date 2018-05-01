@@ -6,30 +6,37 @@ const PROTOCOL_VERSION = '1.0.0';
 export interface IMessage {
   readonly protocol?: string;
   readonly version?: string;
-  readonly namespace?: string;
 
+  readonly correlationId?: string;
+
+  readonly namespace?: string;
   readonly type: string;
   readonly parameters: any[];
-  readonly correlationId?: string;
 }
 
 export class Message implements IMessage {
+  public readonly namespace: string;
   public readonly type: string;
   public readonly parameters: any[];
-  public readonly protocol: string;
-  public readonly version: string;
+
   public readonly correlationId: string;
 
-  constructor(type: string, parameters: any[]) {
+  public readonly protocol: string;
+  public readonly version: string;
+
+  constructor(namespace: string, type: string, parameters: any[], correlationId?: string) {
+    this.namespace = namespace;
     this.type = type;
     this.parameters = parameters;
+
+    this.correlationId = correlationId || uuid();
+
     this.protocol = PROTOCOL_NAME;
     this.version = PROTOCOL_VERSION;
-    this.correlationId = uuid();
   }
 
   public static validate(message: IMessage): boolean {
-    return !!message.protocol && message.protocol === name;
+    return !!message.protocol && message.protocol === PROTOCOL_NAME;
   }
 }
 
