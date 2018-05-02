@@ -48,15 +48,16 @@
     var PROTOCOL_NAME = 'r2-glue-js';
     var PROTOCOL_VERSION = '1.0.0';
     var Message = /** @class */ (function () {
-        function Message(type, parameters) {
+        function Message(namespace, type, parameters, correlationId) {
+            this.namespace = namespace;
             this.type = type;
             this.parameters = parameters;
+            this.correlationId = correlationId || uuid();
             this.protocol = PROTOCOL_NAME;
             this.version = PROTOCOL_VERSION;
-            this.correlationId = uuid();
         }
         Message.validate = function (message) {
-            return !!message.protocol && message.protocol === name;
+            return !!message.protocol && message.protocol === PROTOCOL_NAME;
         };
         return Message;
     }());
@@ -69,13 +70,13 @@
                 if (!Message.validate(request) || request.namespace !== namespace) {
                     return;
                 }
-                _this.processMessage(request, function (message) {
+                _this.processMessage(request, function (type, parameters) {
                     if (!event.source) {
                         return;
                     }
-                    event.source.postMessage(message, event.origin);
+                    event.source.postMessage(new Message(namespace, type, parameters, request.correlationId), event.origin);
                 });
-            });
+            }, false);
         }
         return Receiver;
     }());
@@ -84,32 +85,33 @@
         __extends(Client, _super);
         function Client(namespace, targetWindow) {
             var _this = _super.call(this, namespace) || this;
-            _this.targetWindow = targetWindow;
-            _this.messageCorrelations = {};
+            _this._namespace = namespace;
+            _this._targetWindow = targetWindow;
+            _this._messageCorrelations = {};
             return _this;
         }
         Client.prototype.sendMessage = function (type, parameters, responseCallback) {
-            var message = new Message(type, parameters);
+            var message = new Message(this._namespace, type, parameters);
             if (responseCallback) {
-                var correlations = this.getCorrelations(message.correlationId);
+                var correlations = this._getCorrelations(message.correlationId);
                 correlations.push(responseCallback);
             }
-            this.targetWindow.postMessage(message, this.targetWindow.location.origin);
+            this._targetWindow.postMessage(message, this._targetWindow.location.origin);
         };
         Client.prototype.processMessage = function (message, sendMessage) {
             if (!message.correlationId) {
                 return;
             }
-            var correlations = this.getCorrelations(message.correlationId);
+            var correlations = this._getCorrelations(message.correlationId);
             correlations.forEach(function (callback) {
                 callback.apply(void 0, message.parameters);
             });
         };
-        Client.prototype.getCorrelations = function (id) {
-            if (!this.messageCorrelations[id]) {
-                this.messageCorrelations[id] = [];
+        Client.prototype._getCorrelations = function (id) {
+            if (!this._messageCorrelations[id]) {
+                this._messageCorrelations[id] = [];
             }
-            return this.messageCorrelations[id];
+            return this._messageCorrelations[id];
         };
         return Client;
     }(Receiver));
@@ -124,9 +126,9 @@
         function EventHandling(targetWindow) {
             return _super.call(this, 'event-handling', targetWindow) || this;
         }
-        EventHandling.prototype.addEventListener = function (target, eventType, listener, options) {
+        EventHandling.prototype.addEventListener = function (target, eventType, properties, listener, options) {
             if (options === void 0) { options = {}; }
-            this.sendMessage(EventHandlingMessage.AddEventListener, [target, eventType, options], function (event) {
+            this.sendMessage(EventHandlingMessage.AddEventListener, [target, eventType, properties, options], function (event) {
                 listener(event);
             });
         };

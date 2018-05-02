@@ -45,15 +45,16 @@ var ReadiumGlue = (function (exports) {
     var PROTOCOL_NAME = 'r2-glue-js';
     var PROTOCOL_VERSION = '1.0.0';
     var Message = /** @class */ (function () {
-        function Message(type, parameters) {
+        function Message(namespace, type, parameters, correlationId) {
+            this.namespace = namespace;
             this.type = type;
             this.parameters = parameters;
+            this.correlationId = correlationId || uuid();
             this.protocol = PROTOCOL_NAME;
             this.version = PROTOCOL_VERSION;
-            this.correlationId = uuid();
         }
         Message.validate = function (message) {
-            return !!message.protocol && message.protocol === name;
+            return !!message.protocol && message.protocol === PROTOCOL_NAME;
         };
         return Message;
     }());
@@ -66,13 +67,13 @@ var ReadiumGlue = (function (exports) {
                 if (!Message.validate(request) || request.namespace !== namespace) {
                     return;
                 }
-                _this.processMessage(request, function (message) {
+                _this.processMessage(request, function (type, parameters) {
                     if (!event.source) {
                         return;
                     }
-                    event.source.postMessage(message, event.origin);
+                    event.source.postMessage(new Message(namespace, type, parameters, request.correlationId), event.origin);
                 });
-            });
+            }, false);
         }
         return Receiver;
     }());
@@ -81,11 +82,11 @@ var ReadiumGlue = (function (exports) {
         __extends(Dispatcher, _super);
         function Dispatcher(namespace, handlerType) {
             var _this = _super.call(this, namespace) || this;
-            _this.handler = new handlerType();
+            _this._handler = new handlerType();
             return _this;
         }
         Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this.handler[message.type].apply(this, [
+            this._handler[message.type].apply(this, [
                 function () {
                     var responseParams = [];
                     for (var _i = 0; _i < arguments.length; _i++) {
