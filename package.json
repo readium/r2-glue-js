@@ -48,6 +48,11 @@
   },
   "homepage": "https://github.com/readium/r2-glue-js#readme",
   "main": "./dist/ReadiumGlue.js",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && rollup -c",
