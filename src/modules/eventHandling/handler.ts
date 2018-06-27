@@ -47,8 +47,8 @@ export class EventHandler extends MessageHandler {
                 if (value instanceof Document) {
                   return '@document';
                 }
-                if (value instanceof Node) {
-                  // Generate a CSS selector for the Node
+                if (value instanceof Element) {
+                  // Generate a CSS selector for the Element
                   return finder(value);
                 }
                 return value;

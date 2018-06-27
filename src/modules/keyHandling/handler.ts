@@ -38,7 +38,5 @@ export class KeyHandler extends MessageHandler {
     eventType: KeyEventType,
     keyCode: string,
     options: IAddKeyListenerOptions = {},
-  ): void {
-
-  }
+  ): void {}
 }

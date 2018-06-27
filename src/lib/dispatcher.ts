@@ -5,7 +5,7 @@ import { sendMessage, Receiver } from './receiver';
 export class Dispatcher extends Receiver {
   private _handler: MessageHandler;
 
-  public constructor(namespace: string, handlerType: { new(): MessageHandler }) {
+  public constructor(namespace: string, handlerType: { new (): MessageHandler }) {
     super(namespace);
     this._handler = new handlerType();
   }
