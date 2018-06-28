@@ -1,5 +1,5 @@
 import { IMessage } from '../lib';
-import { messageResponseCallback } from './messageHandler';
+import { MessageResponseCallback } from './messageHandler';
 import { sendMessage, Receiver } from './receiver';
 import { Message } from './message';
 
@@ -7,7 +7,7 @@ export abstract class Client extends Receiver {
   private readonly _targetWindow: Window;
   private readonly _namespace: string;
 
-  private readonly _messageCorrelations: { [id: string]: messageResponseCallback[] };
+  private readonly _messageCorrelations: { [id: string]: MessageResponseCallback[] };
 
   protected constructor(namespace: string, targetWindow: Window) {
     super(namespace);
@@ -19,7 +19,7 @@ export abstract class Client extends Receiver {
   protected sendMessage(
     type: string,
     parameters: any[],
-    responseCallback?: messageResponseCallback,
+    responseCallback?: MessageResponseCallback,
   ): void {
     const message = new Message(this._namespace, type, parameters);
     if (responseCallback) {
@@ -41,7 +41,7 @@ export abstract class Client extends Receiver {
     });
   }
 
-  private _getCorrelations(id: string): messageResponseCallback[] {
+  private _getCorrelations(id: string): MessageResponseCallback[] {
     if (!this._messageCorrelations[id]) {
       this._messageCorrelations[id] = [];
     }

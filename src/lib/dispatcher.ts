@@ -11,7 +11,7 @@ export class Dispatcher extends Receiver {
   }
 
   protected processMessage(message: IMessage, sendMessage: sendMessage): void {
-    this._handler[message.type].apply(this, [
+    this._handler.declarations[message.type].apply(this, [
       (...responseParams: any[]) => {
         sendMessage(`${message.type}$response`, responseParams);
       },

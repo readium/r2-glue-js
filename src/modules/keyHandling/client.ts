@@ -6,16 +6,16 @@ export class KeyHandling extends Client {
     super('key-handling', targetWindow);
   }
 
-  public addEventListener(
+  public addKeyEventListener(
     target: string,
     eventType: string,
-    properties: string[],
+    keyCode: string,
     listener: EventListener,
     options: IAddKeyListenerOptions = {},
   ): void {
     this.sendMessage(
       KeyHandlingMessage.AddKeyEventListener,
-      [target, eventType, properties, options],
+      [target, eventType, keyCode, options],
       (event) => {
         listener(event);
       },

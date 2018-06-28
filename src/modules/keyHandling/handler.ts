@@ -1,23 +1,28 @@
-import { MessageHandler, messageResponseCallback } from '../../lib';
+import { MessageHandler, MessageResponseCallback, MessageResponders } from '../../lib';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 
 interface IRegisteredKeyHandler {
-  eventType: string;
-  callback: messageResponseCallback;
+  eventType: KeyEventType;
+  callback: MessageResponseCallback;
   options: IAddKeyListenerOptions;
 }
 
 export class KeyHandler extends MessageHandler {
+  declarations: MessageResponders = {
+    [KeyHandlingMessage.AddKeyEventListener]: this._addKeyEventListener,
+  };
+
+  private registeredKeyHandlers: { [key: string]: IRegisteredKeyHandler[] } = {};
+
   constructor() {
     super();
-    const registeredKeyHandlers: { [key: string]: IRegisteredKeyHandler[] } = {};
     const keyboardEventHandler = (event: KeyboardEvent) => {
       if (event.defaultPrevented) {
         // Skip if event is already handled
         return;
       }
 
-      const matchingKeyHandlerSet = registeredKeyHandlers[event.key] || [];
+      const matchingKeyHandlerSet = this.registeredKeyHandlers[event.key] || [];
       matchingKeyHandlerSet.forEach((handlerInfo) => {
         if (handlerInfo.eventType !== event.type) {
           return;
@@ -33,10 +38,16 @@ export class KeyHandler extends MessageHandler {
     window.addEventListener('keyup', keyboardEventHandler, true);
   }
 
-  private [KeyHandlingMessage.AddKeyEventListener](
-    callback: messageResponseCallback,
+  private _addKeyEventListener(
+    callback: MessageResponseCallback,
     eventType: KeyEventType,
     keyCode: string,
     options: IAddKeyListenerOptions = {},
-  ): void {}
+  ): void {
+    this.registeredKeyHandlers[keyCode].push({
+      eventType,
+      callback,
+      options,
+    });
+  }
 }

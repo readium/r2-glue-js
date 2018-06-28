@@ -1,5 +1,7 @@
-export type messageResponseCallback = (...params: any[]) => void;
-
+export type MessageResponseCallback = (...params: any[]) => void;
+export type MessageResponders = {
+  [key: string]: (callback: MessageResponseCallback, ...params: any[]) => void;
+};
 export abstract class MessageHandler {
-  [key: string]: (callback: messageResponseCallback, ...params: any[]) => void;
+  public abstract declarations: MessageResponders;
 }

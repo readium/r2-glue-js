@@ -7,9 +7,9 @@ import path from 'path';
 
 const pkg = require('./package.json');
 
-const plugins = [resolve(), commonjs(), typescript2()];
+const plugins = [resolve(), commonjs(), typescript2({ check: false })];
 
-const baseModuleEntries = ['./src/lib/dispatcher.ts','./src/lib/messageHandler.ts'];
+const baseModuleEntries = ['./src/lib/dispatcher.ts', './src/lib/messageHandler.ts'];
 
 const buildModuleEntry = (input) => {
   const moduleName = path.basename(path.resolve(input, '..'));
@@ -42,6 +42,7 @@ export default [
     plugins: [...plugins, multiEntry()],
   },
   buildModuleEntry('./src/modules/eventHandling/index.ts'),
+  buildModuleEntry('./src/modules/keyHandling/index.ts'),
   {
     input: './src/clients.ts',
     output: [
@@ -66,23 +67,23 @@ export default [
     ],
     plugins: process.env.SERVE
       ? [
-        ...plugins,
-        serve({
-          // Launch in browser (default: false)
-          open: true,
+          ...plugins,
+          serve({
+            // Launch in browser (default: false)
+            open: true,
 
-          // Multiple folders to serve from
-          contentBase: ['.', 'examples/demo'],
+            // Multiple folders to serve from
+            contentBase: ['.', 'examples/demo'],
 
-          // Options used in setting up server
-          host: '0.0.0.0',
-          port: 8080,
+            // Options used in setting up server
+            host: '0.0.0.0',
+            port: 8080,
 
-          headers: {
-            'Cache-Control': 'no-cache, must-revalidate',
-          },
-        }),
-      ]
+            headers: {
+              'Cache-Control': 'no-cache, must-revalidate',
+            },
+          }),
+        ]
       : plugins,
   },
 ];

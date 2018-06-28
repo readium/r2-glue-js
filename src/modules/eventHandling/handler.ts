@@ -1,11 +1,15 @@
 import finder from '@medv/finder';
 
-import { MessageHandler, messageResponseCallback } from '../../lib';
+import { MessageHandler, MessageResponders, MessageResponseCallback } from '../../lib';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
 export class EventHandler extends MessageHandler {
-  private [EventHandlingMessage.AddEventListener](
-    callback: messageResponseCallback,
+  declarations: MessageResponders = {
+    [EventHandlingMessage.AddEventListener]: this._addEventListener,
+  };
+
+  private _addEventListener(
+    callback: MessageResponseCallback,
     target: string,
     eventType: string,
     properties: string[],
