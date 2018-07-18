@@ -1,13 +1,26 @@
-import { MessageHandler, MessageResponseCallback, MessageResponders } from '../../lib';
+import { MessageHandler, MessageCallback, MessageResponders } from '../../lib';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
+import { marshalEvent } from '../../lib/marshaling';
+import { EventHandler } from '../eventHandling/handler';
 
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
-  callback: MessageResponseCallback;
+  callback: MessageCallback;
   options: IAddKeyListenerOptions;
 }
 
-export class KeyHandler extends MessageHandler {
+const KEYBOARD_EVENT_PROPERTIES = [
+  'key',
+  'code',
+  'location',
+  'ctrlKey',
+  'shiftKey',
+  'altKey',
+  'metaKey',
+  'isComposing',
+];
+
+export class KeyHandler extends EventHandler {
   declarations: MessageResponders = {
     [KeyHandlingMessage.AddKeyEventListener]: this._addKeyEventListener,
   };
@@ -31,6 +44,8 @@ export class KeyHandler extends MessageHandler {
         if (handlerInfo.options.preventDefault) {
           event.preventDefault();
         }
+
+        handlerInfo.callback(marshalEvent(event, KEYBOARD_EVENT_PROPERTIES));
       });
     };
     window.addEventListener('keydown', keyboardEventHandler, true);
@@ -38,16 +53,16 @@ export class KeyHandler extends MessageHandler {
     window.addEventListener('keyup', keyboardEventHandler, true);
   }
 
-  private _addKeyEventListener(
-    callback: MessageResponseCallback,
+  private async _addKeyEventListener(
+    callback: MessageCallback,
+    target: string,
     eventType: KeyEventType,
-    keyCode: string,
-    options: IAddKeyListenerOptions = {},
-  ): void {
-    this.registeredKeyHandlers[keyCode].push({
-      eventType,
-      callback,
-      options,
-    });
+    keyCode?: string,
+    options?: IAddKeyListenerOptions,
+  ): Promise<void> {
+    // if (!this.registeredKeyHandlers[keyCode]) {
+    //   this.registeredKeyHandlers[keyCode] = [];
+    // }
+    // this.registeredKeyHandlers[keyCode].push({ eventType, callback, options });
   }
 }

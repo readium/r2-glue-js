@@ -11,3 +11,13 @@ export function uuid(a: any = undefined): string {
     : (([1e7] as any) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
 }
 // tslint:enable
+
+export function resolveEventTargetSelector(selector: string): EventTarget[] {
+  if (selector === '@window') {
+    return [window];
+  }
+  if (selector === '@document') {
+    return [document];
+  }
+  return Array.from(document.querySelectorAll(selector));
+}

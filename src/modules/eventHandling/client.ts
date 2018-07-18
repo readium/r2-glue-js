@@ -6,14 +6,14 @@ export class EventHandling extends Client {
     super('event-handling', targetWindow);
   }
 
-  public addEventListener(
+  public async addEventListener(
     target: string,
     eventType: string,
     properties: string[],
     listener: EventListener,
     options: IAddEventListenerOptions = {},
-  ): void {
-    this.sendMessage(
+  ): Promise<number> {
+    return this.sendMessage(
       EventHandlingMessage.AddEventListener,
       [target, eventType, properties, options],
       (event) => {

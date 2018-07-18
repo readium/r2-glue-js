@@ -1,4 +1,4 @@
-import { IMessage } from './message';
+import {IMessage, MessageType} from './message';
 import { MessageHandler } from './messageHandler';
 import { sendMessage, Receiver } from './receiver';
 
@@ -10,12 +10,14 @@ export class Dispatcher extends Receiver {
     this._handler = new handlerType();
   }
 
-  protected processMessage(message: IMessage, sendMessage: sendMessage): void {
-    this._handler.declarations[message.type].apply(this, [
+  protected async processMessage(message: IMessage, sendMessage: sendMessage): Promise<void> {
+    const handlerFunction = this._handler.declarations[message.name];
+    const handlerReturnValue = await handlerFunction.apply(this._handler, [
       (...responseParams: any[]) => {
-        sendMessage(`${message.type}$response`, responseParams);
+        sendMessage(MessageType.Yield, message.name, responseParams);
       },
       ...message.parameters,
     ]);
+    sendMessage(MessageType.Reply, message.name, handlerReturnValue);
   }
 }

@@ -1,6 +1,10 @@
-import { IMessage, IMessageEvent, Message } from './message';
+import { IMessage, Message, MessageType } from './message';
 
-export type sendMessage = (type: string, parameters: any[]) => void;
+interface IMessageEvent extends MessageEvent {
+  readonly data: IMessage;
+}
+
+export type sendMessage = (type: MessageType, name: string, parameters: any[]) => void;
 
 export abstract class Receiver {
   protected constructor(namespace: string) {
@@ -13,13 +17,13 @@ export abstract class Receiver {
           return;
         }
 
-        this.processMessage(request, (type: string, parameters: any[]) => {
+        this.processMessage(request, (type: MessageType, name: string, parameters: any[]) => {
           if (!event.source) {
             return;
           }
 
           event.source.postMessage(
-            new Message(namespace, type, parameters, request.correlationId),
+            new Message(namespace, type, name, parameters, request.correlationId),
             event.origin,
           );
         });
@@ -28,5 +32,8 @@ export abstract class Receiver {
     );
   }
 
-  protected abstract processMessage(message: IMessage, sendMessage: sendMessage): void;
+  protected abstract async processMessage(
+    message: IMessage,
+    sendMessage: sendMessage,
+  ): Promise<void>;
 }

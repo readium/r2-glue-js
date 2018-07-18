@@ -1,66 +1,54 @@
-import finder from '@medv/finder';
-
-import { MessageHandler, MessageResponders, MessageResponseCallback } from '../../lib';
+import { MessageHandler, MessageResponders, MessageCallback } from '../../lib';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
+import { marshalEvent } from '../../lib/marshaling';
+import { resolveEventTargetSelector } from '../../lib/util';
+
+interface IRegisteredEventListeners {
+  type: string;
+  listeners: EventListener[];
+}
+
+let lastUsedID = 0;
 
 export class EventHandler extends MessageHandler {
   declarations: MessageResponders = {
     [EventHandlingMessage.AddEventListener]: this._addEventListener,
   };
 
-  private _addEventListener(
-    callback: MessageResponseCallback,
+  private registeredEventListenerRemoval: { [id: number]: Function[] } = {};
+  private async _addEventListener(
+    callback: MessageCallback,
     target: string,
-    eventType: string,
+    type: string,
     properties: string[],
     options: IAddEventListenerOptions,
-  ): void {
-    let eventTargets;
-    if (target === '@window') {
-      eventTargets = [window];
-    } else if (target === '@document') {
-      eventTargets = [document];
-    } else {
-      eventTargets = document.querySelectorAll(target);
-    }
+  ): Promise<number> {
+    const targets = resolveEventTargetSelector(target);
 
-    if (eventTargets && eventTargets.length) {
-      Array.prototype.forEach.call(eventTargets, (resolvedTarget: EventTarget) => {
-        resolvedTarget.addEventListener(eventType, (event) => {
-          if (options.preventDefault) {
-            event.preventDefault();
-          }
-          if (options.stopPropagation) {
-            event.stopPropagation();
-          }
-          if (options.stopImmediatePropagation) {
-            event.stopImmediatePropagation();
-          }
+    const listeners = targets.map((resolvedTarget: EventTarget) => {
+      const listener: EventListener = (event) => {
+        if (options.preventDefault) {
+          event.preventDefault();
+        }
+        if (options.stopPropagation) {
+          event.stopPropagation();
+        }
+        if (options.stopImmediatePropagation) {
+          event.stopImmediatePropagation();
+        }
 
-          const pluckedEventArgs: any = {};
-          properties.forEach((key) => {
-            pluckedEventArgs[key] = (event as any)[key];
-          });
+        callback(marshalEvent(event, properties));
+      };
+      resolvedTarget.addEventListener(type, listener);
+      return listener;
+    });
 
-          callback(
-            JSON.parse(
-              JSON.stringify(pluckedEventArgs, (key, value) => {
-                if (value instanceof Window) {
-                  return '@window';
-                }
-                if (value instanceof Document) {
-                  return '@document';
-                }
-                if (value instanceof Element) {
-                  // Generate a CSS selector for the Element
-                  return finder(value);
-                }
-                return value;
-              }),
-            ),
-          );
-        });
-      });
-    }
+    lastUsedID = lastUsedID + 1;
+    this.registeredEventListeners[lastUsedID] = {
+      type,
+      listeners,
+    };
+
+    return lastUsedID;
   }
 }
