@@ -1,5 +1,5 @@
 this.ReadiumGlue = this.ReadiumGlue || {};
-this.ReadiumGlue.eventHandling = (function (dispatcher_ts,messageHandler_ts) {
+this.ReadiumGlue.keyHandling = (function (dispatcher_ts,messageHandler_ts) {
   'use strict';
 
   // tslint:disable
@@ -87,11 +87,10 @@ this.ReadiumGlue.eventHandling = (function (dispatcher_ts,messageHandler_ts) {
       }
   }
 
-  var EventHandlingMessage;
-  (function (EventHandlingMessage) {
-      EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
-      EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
-  })(EventHandlingMessage || (EventHandlingMessage = {}));
+  var KeyHandlingMessage;
+  (function (KeyHandlingMessage) {
+      KeyHandlingMessage["AddKeyEventListener"] = "ADD_KEY_EVENT_LISTENER";
+  })(KeyHandlingMessage || (KeyHandlingMessage = {}));
 
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -598,6 +597,12 @@ this.ReadiumGlue.eventHandling = (function (dispatcher_ts,messageHandler_ts) {
       }));
   }
 
+  var EventHandlingMessage;
+  (function (EventHandlingMessage) {
+      EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
+      EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
+  })(EventHandlingMessage || (EventHandlingMessage = {}));
+
   var lastUsedID = 0;
   var EventHandler = /** @class */ (function (_super) {
       __extends(EventHandler, _super);
@@ -651,9 +656,59 @@ this.ReadiumGlue.eventHandling = (function (dispatcher_ts,messageHandler_ts) {
       return EventHandler;
   }(dispatcher_ts.MessageHandler));
 
-  var index = new dispatcher_ts.Dispatcher('event-handling', EventHandler);
+  var KEYBOARD_EVENT_PROPERTIES = [
+      'key',
+      'code',
+      'location',
+      'ctrlKey',
+      'shiftKey',
+      'altKey',
+      'metaKey',
+      'isComposing',
+  ];
+  var KeyHandler = /** @class */ (function (_super) {
+      __extends(KeyHandler, _super);
+      function KeyHandler() {
+          var _a;
+          var _this = _super.call(this) || this;
+          _this.declarations = (_a = {},
+              _a[KeyHandlingMessage.AddKeyEventListener] = _this._addKeyEventListener,
+              _a);
+          _this.registeredKeyHandlers = {};
+          var keyboardEventHandler = function (event) {
+              if (event.defaultPrevented) {
+                  // Skip if event is already handled
+                  return;
+              }
+              var matchingKeyHandlerSet = _this.registeredKeyHandlers[event.key] || [];
+              matchingKeyHandlerSet.forEach(function (handlerInfo) {
+                  if (handlerInfo.eventType !== event.type) {
+                      return;
+                  }
+                  if (handlerInfo.options.preventDefault) {
+                      event.preventDefault();
+                  }
+                  handlerInfo.callback(marshalEvent(event, KEYBOARD_EVENT_PROPERTIES));
+              });
+          };
+          window.addEventListener('keydown', keyboardEventHandler, true);
+          window.addEventListener('keypress', keyboardEventHandler, true);
+          window.addEventListener('keyup', keyboardEventHandler, true);
+          return _this;
+      }
+      KeyHandler.prototype._addKeyEventListener = function (callback, target, eventType, keyCode, options) {
+          return __awaiter(this, void 0, void 0, function () {
+              return __generator(this, function (_a) {
+                  return [2 /*return*/];
+              });
+          });
+      };
+      return KeyHandler;
+  }(EventHandler));
+
+  var index = new dispatcher_ts.Dispatcher('key-handling', KeyHandler);
 
   return index;
 
 }(ReadiumGlue,ReadiumGlue));
-//# sourceMappingURL=ReadiumGlue-eventHandling.js.map
+//# sourceMappingURL=ReadiumGlue-keyHandling.js.map
