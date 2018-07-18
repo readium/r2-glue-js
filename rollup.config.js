@@ -2,12 +2,16 @@ import typescript2 from 'rollup-plugin-typescript2';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import multiEntry from 'rollup-plugin-multi-entry';
-import serve from 'rollup-plugin-serve';
 import path from 'path';
 
 const pkg = require('./package.json');
 
-const plugins = [resolve(), commonjs(), typescript2({ check: false })];
+const plugins = [
+  resolve(),
+  commonjs(),
+  typescript2({ tsconfig: 'tsconfig.json', check: !process.env.WATCH }),
+  // `check` must be turned off in watch mode... there's a potential bug with the ts rollup plugin
+];
 
 const baseModuleEntries = ['./src/lib/dispatcher.ts', './src/lib/messageHandler.ts'];
 
@@ -65,25 +69,6 @@ export default [
         sourcemap: true,
       },
     ],
-    plugins: process.env.SERVE
-      ? [
-          ...plugins,
-          serve({
-            // Launch in browser (default: false)
-            open: true,
-
-            // Multiple folders to serve from
-            contentBase: ['.', 'examples/demo'],
-
-            // Options used in setting up server
-            host: '0.0.0.0',
-            port: 8080,
-
-            headers: {
-              'Cache-Control': 'no-cache, must-revalidate',
-            },
-          }),
-        ]
-      : plugins,
+    plugins,
   },
 ];

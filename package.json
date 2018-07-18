@@ -59,21 +59,21 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "format": "prettier --config .prettierrc --write src/**/**.ts",
-    "watch": "npm run build -- -w",
-    "start": "SERVE=true npm run watch"
+    "watch": "WATCH=true npm run build -- -w",
+    "serve": "static -a 0.0.0.0 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' .",
+    "start": "concurrently \"npm:watch\" \"npm:serve\""
   },
   "dependencies": {
     "@medv/finder": "^1.0.3"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.2",
+    "concurrently": "^3.6.0",
     "prettier": "^1.13.6",
     "rimraf": "^2.6.2",
     "rollup": "^0.62.0",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-typescript2": "^0.15.1",
     "tslint": "^5.9.1",
     "tslint-config-airbnb": "^5.8.0",
