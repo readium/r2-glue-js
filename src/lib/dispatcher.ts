@@ -1,4 +1,4 @@
-import {IMessage, MessageType} from './message';
+import { IMessage, MessageType } from './message';
 import { MessageHandler } from './messageHandler';
 import { sendMessage, Receiver } from './receiver';
 

@@ -21,4 +21,8 @@ export class EventHandling extends Client {
       },
     );
   }
+
+  public removeEventListener(listenerID: number): void {
+    this.sendMessage(EventHandlingMessage.RemoveEventListener, [listenerID]);
+  }
 }

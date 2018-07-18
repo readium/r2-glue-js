@@ -13,9 +13,11 @@ let lastUsedID = 0;
 export class EventHandler extends MessageHandler {
   declarations: MessageResponders = {
     [EventHandlingMessage.AddEventListener]: this._addEventListener,
+    [EventHandlingMessage.RemoveEventListener]: this._removeEventListener,
   };
 
-  private registeredEventListenerRemoval: { [id: number]: Function[] } = {};
+  private registeredEventListenerRemovers: { [id: number]: Function[] } = {};
+
   private async _addEventListener(
     callback: MessageCallback,
     target: string,
@@ -25,7 +27,7 @@ export class EventHandler extends MessageHandler {
   ): Promise<number> {
     const targets = resolveEventTargetSelector(target);
 
-    const listeners = targets.map((resolvedTarget: EventTarget) => {
+    const listenerRemovers = targets.map((resolvedTarget: EventTarget) => {
       const listener: EventListener = (event) => {
         if (options.preventDefault) {
           event.preventDefault();
@@ -40,15 +42,17 @@ export class EventHandler extends MessageHandler {
         callback(marshalEvent(event, properties));
       };
       resolvedTarget.addEventListener(type, listener);
-      return listener;
+      return () => {
+        resolvedTarget.removeEventListener(type, listener);
+      };
     });
 
     lastUsedID = lastUsedID + 1;
-    this.registeredEventListeners[lastUsedID] = {
-      type,
-      listeners,
-    };
-
+    this.registeredEventListenerRemovers[lastUsedID] = listenerRemovers;
     return lastUsedID;
+  }
+
+  private async _removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
+    (this.registeredEventListenerRemovers[listenerID] || []).forEach((remove) => remove());
   }
 }
