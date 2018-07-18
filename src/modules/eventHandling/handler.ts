@@ -3,11 +3,6 @@ import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 import { marshalEvent } from '../../lib/marshaling';
 import { resolveEventTargetSelector } from '../../lib/util';
 
-interface IRegisteredEventListeners {
-  type: string;
-  listeners: EventListener[];
-}
-
 let lastUsedID = 0;
 
 export class EventHandler extends MessageHandler {
