@@ -27,13 +27,12 @@ export abstract class Receiver {
             event.origin,
           );
         });
-      },
-      false,
+      }
     );
   }
 
-  protected abstract async processMessage(
+  protected abstract processMessage(
     message: IMessage,
     sendMessage: sendMessage,
-  ): Promise<void>;
+  ): void;
 }

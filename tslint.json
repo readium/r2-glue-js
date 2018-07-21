@@ -40,7 +40,8 @@
     "variable-name": [
       true,
       "check-format",
-      "allow-leading-underscore"
+      "allow-leading-underscore",
+      "allow-trailing-underscore"
     ]
   },
   "rulesDirectory": [],
