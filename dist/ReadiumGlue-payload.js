@@ -129,7 +129,7 @@ var ReadiumGlue = (function (exports) {
                     }
                     event.source.postMessage(new Message(namespace, type, name, parameters, request.correlationId), event.origin);
                 });
-            }, false);
+            });
         }
         return Receiver;
     }());
@@ -142,27 +142,18 @@ var ReadiumGlue = (function (exports) {
             return _this;
         }
         Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            return __awaiter(this, void 0, void 0, function () {
-                var handlerFunction, handlerReturnValue;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            handlerFunction = this._handler.declarations[message.name];
-                            return [4 /*yield*/, handlerFunction.apply(this._handler, [
-                                    function () {
-                                        var responseParams = [];
-                                        for (var _i = 0; _i < arguments.length; _i++) {
-                                            responseParams[_i] = arguments[_i];
-                                        }
-                                        sendMessage(MessageType.Yield, message.name, responseParams);
-                                    }
-                                ].concat(message.parameters))];
-                        case 1:
-                            handlerReturnValue = _a.sent();
-                            sendMessage(MessageType.Reply, message.name, handlerReturnValue);
-                            return [2 /*return*/];
+            this._handler.declarations[message.name]
+                .apply(this._handler, [
+                function () {
+                    var yieldValues = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        yieldValues[_i] = arguments[_i];
                     }
-                });
+                    sendMessage(MessageType.Yield, message.name, yieldValues);
+                }
+            ].concat(message.parameters))
+                .then(function (returnValue) {
+                return sendMessage(MessageType.Reply, message.name, returnValue);
             });
         };
         return Dispatcher;
