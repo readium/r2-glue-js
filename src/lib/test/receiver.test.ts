@@ -1,6 +1,6 @@
 import { IMessage, Message, MessageType } from '../message';
 import { Receiver, sendMessage } from '../receiver';
-import { testMessage } from '../message.test';
+import { testMessage } from './message.test';
 import Mock = jest.Mock;
 
 window.addEventListener = jest.fn();
@@ -47,7 +47,7 @@ describe('processing and responding to messages', () => {
     } as MessageEvent);
 
     const sendMessageCallback: sendMessage = (testReceiver.processMessage as Mock).mock.calls[0][1];
-    const expectedPostedMessage = {
+    const postedMessage = {
       type: MessageType.Reply,
       key: 'retest',
       value: ['a', 'b', 'c'],
@@ -55,14 +55,14 @@ describe('processing and responding to messages', () => {
     };
 
     sendMessageCallback(
-      expectedPostedMessage.type,
-      expectedPostedMessage.key,
-      expectedPostedMessage.value,
+      postedMessage.type,
+      postedMessage.key,
+      postedMessage.value,
     );
 
     expect(postMessageCall).toBeCalledWith(expect.any(Message), 'example.com');
 
     const actualPostedMessage: IMessage = postMessageCall.mock.calls[0][0];
-    expect(actualPostedMessage).toMatchObject(expectedPostedMessage);
+    expect(actualPostedMessage).toMatchObject(postedMessage);
   });
 });

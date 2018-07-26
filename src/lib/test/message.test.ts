@@ -1,4 +1,4 @@
-import { Message, MessageType } from './message';
+import { Message, MessageType } from '../message';
 
 export const testMessage = new Message('namespace', MessageType.Call, 'test', [0, 1, 2, 3]);
 

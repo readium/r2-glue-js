@@ -1,4 +1,4 @@
-import finder from '@medv/finder';
+import { generateEventTargetSelector, isEventTarget } from './util';
 
 export const EVENT_PROPERTIES = [
   'type',
@@ -34,15 +34,8 @@ export function marshalEvent(event: Event, enumeratedProperties: string[] = []):
 export function marshalObject(obj: any): any {
   return JSON.parse(
     JSON.stringify(obj, (key, value) => {
-      if (value instanceof Window) {
-        return '@window';
-      }
-      if (value instanceof Document) {
-        return '@document';
-      }
-      if (value instanceof Element) {
-        // Generate a CSS selector for the Element
-        return finder(value);
+      if (isEventTarget(value)) {
+        return generateEventTargetSelector(value);
       }
       return value;
     }),

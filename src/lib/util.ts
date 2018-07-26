@@ -1,3 +1,5 @@
+import finder from '@medv/finder';
+
 // tslint:disable
 /**
  * Returns a random v4 UUID
@@ -12,6 +14,10 @@ export function uuid(a: any = undefined): string {
 }
 // tslint:enable
 
+export function isEventTarget(input: any): boolean {
+  return !!(input.addEventListener && input.removeEventListener && input.dispatchEvent);
+}
+
 export function resolveEventTargetSelector(selector: string): EventTarget[] {
   if (selector === '@window') {
     return [window];
@@ -20,4 +26,17 @@ export function resolveEventTargetSelector(selector: string): EventTarget[] {
     return [document];
   }
   return Array.from(document.querySelectorAll(selector));
+}
+
+export function generateEventTargetSelector(eventTarget: EventTarget): string | undefined {
+  if (eventTarget === window) {
+    return '@window';
+  }
+  if (eventTarget === document) {
+    return '@document';
+  }
+  if (eventTarget instanceof Element) {
+    // Generate a CSS selector for the Element
+    return finder(eventTarget);
+  }
 }
