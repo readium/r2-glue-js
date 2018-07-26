@@ -100,11 +100,11 @@ var ReadiumGlue = (function (exports) {
         MessageType["Yield"] = "yield";
     })(MessageType || (MessageType = {}));
     var Message = /** @class */ (function () {
-        function Message(namespace, type, name, parameters, correlationId) {
+        function Message(namespace, type, key, value, correlationId) {
             this.namespace = namespace;
             this.type = type;
-            this.name = name;
-            this.parameters = parameters;
+            this.key = key;
+            this.value = value;
             this.correlationId = correlationId || uuid();
             this.protocol = PROTOCOL_NAME;
             this.version = PROTOCOL_VERSION;
@@ -142,18 +142,18 @@ var ReadiumGlue = (function (exports) {
             return _this;
         }
         Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this._handler.declarations[message.name]
+            this._handler.declarations[message.key]
                 .apply(this._handler, [
                 function () {
                     var yieldValues = [];
                     for (var _i = 0; _i < arguments.length; _i++) {
                         yieldValues[_i] = arguments[_i];
                     }
-                    sendMessage(MessageType.Yield, message.name, yieldValues);
+                    sendMessage(MessageType.Yield, message.key, yieldValues);
                 }
-            ].concat(message.parameters))
+            ].concat(message.value))
                 .then(function (returnValue) {
-                return sendMessage(MessageType.Reply, message.name, returnValue);
+                return sendMessage(MessageType.Reply, message.key, returnValue);
             });
         };
         return Dispatcher;

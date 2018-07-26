@@ -93,11 +93,11 @@
         MessageType["Yield"] = "yield";
     })(MessageType || (MessageType = {}));
     var Message = /** @class */ (function () {
-        function Message(namespace, type, name, parameters, correlationId) {
+        function Message(namespace, type, key, value, correlationId) {
             this.namespace = namespace;
             this.type = type;
-            this.name = name;
-            this.parameters = parameters;
+            this.key = key;
+            this.value = value;
             this.correlationId = correlationId || uuid();
             this.protocol = PROTOCOL_NAME;
             this.version = PROTOCOL_VERSION;
@@ -135,18 +135,18 @@
             return _this;
         }
         Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this._handler.declarations[message.name]
+            this._handler.declarations[message.key]
                 .apply(this._handler, [
                 function () {
                     var yieldValues = [];
                     for (var _i = 0; _i < arguments.length; _i++) {
                         yieldValues[_i] = arguments[_i];
                     }
-                    sendMessage(MessageType.Yield, message.name, yieldValues);
+                    sendMessage(MessageType.Yield, message.key, yieldValues);
                 }
-            ].concat(message.parameters))
+            ].concat(message.value))
                 .then(function (returnValue) {
-                return sendMessage(MessageType.Reply, message.name, returnValue);
+                return sendMessage(MessageType.Reply, message.key, returnValue);
             });
         };
         return Dispatcher;
@@ -161,8 +161,8 @@
             _this._messageCorrelations = {};
             return _this;
         }
-        Client.prototype.sendMessage = function (name, parameters, callback) {
-            var message = new Message(this._namespace, MessageType.Call, name, parameters);
+        Client.prototype.sendMessage = function (key, parameters, callback) {
+            var message = new Message(this._namespace, MessageType.Call, key, parameters);
             var correlations = this._getCorrelations(message.correlationId);
             if (callback) {
                 correlations.yieldCallback = callback;
@@ -172,23 +172,17 @@
                 correlations.replyCallback = resolve;
             });
         };
-        Client.prototype.processMessage = function (message, sendMessage) {
-            return __awaiter(this, void 0, void 0, function () {
-                var correlations;
-                return __generator(this, function (_a) {
-                    if (!message.correlationId) {
-                        return [2 /*return*/];
-                    }
-                    correlations = this._getCorrelations(message.correlationId);
-                    if (message.type === MessageType.Reply && correlations.replyCallback) {
-                        correlations.replyCallback(message.parameters);
-                    }
-                    if (message.type === MessageType.Yield && correlations.yieldCallback) {
-                        correlations.yieldCallback(message.parameters);
-                    }
-                    return [2 /*return*/];
-                });
-            });
+        Client.prototype.processMessage = function (message) {
+            if (!message.correlationId) {
+                return;
+            }
+            var correlations = this._getCorrelations(message.correlationId);
+            if (message.type === MessageType.Reply && correlations.replyCallback) {
+                correlations.replyCallback(message.value);
+            }
+            if (message.type === MessageType.Yield && correlations.yieldCallback) {
+                correlations.yieldCallback(message.value);
+            }
         };
         Client.prototype._getCorrelations = function (id) {
             if (!this._messageCorrelations[id]) {
