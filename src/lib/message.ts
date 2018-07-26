@@ -16,10 +16,10 @@ export interface IMessage {
   readonly correlationId?: string;
 
   readonly namespace?: string;
-  readonly type: MessageType;
+  readonly type?: MessageType;
 
-  readonly name: string;
-  readonly parameters: any[];
+  readonly key: string;
+  readonly value: any;
 }
 
 export class Message implements IMessage {
@@ -31,21 +31,21 @@ export class Message implements IMessage {
   public readonly namespace: string;
   public readonly type: MessageType;
 
-  public readonly name: string;
-  public readonly parameters: any[];
+  public readonly key: string;
+  public readonly value: any;
 
   constructor(
     namespace: string,
     type: MessageType,
-    name: string,
-    parameters: any[],
+    key: string,
+    value: any,
     correlationId?: string,
   ) {
     this.namespace = namespace;
     this.type = type;
 
-    this.name = name;
-    this.parameters = parameters;
+    this.key = key;
+    this.value = value;
 
     this.correlationId = correlationId || uuid();
 

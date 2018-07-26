@@ -11,15 +11,15 @@ export class Dispatcher extends Receiver {
   }
 
   protected processMessage(message: IMessage, sendMessage: sendMessage): void {
-    this._handler.declarations[message.name]
+    this._handler.declarations[message.key]
       .apply(this._handler, [
         (...yieldValues: any[]) => {
-          sendMessage(MessageType.Yield, message.name, yieldValues);
+          sendMessage(MessageType.Yield, message.key, yieldValues);
         },
-        ...message.parameters,
+        ...message.value,
       ])
       .then((returnValue: any) =>
-        sendMessage(MessageType.Reply, message.name, returnValue),
+        sendMessage(MessageType.Reply, message.key, returnValue),
       );
   }
 }

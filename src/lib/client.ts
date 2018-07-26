@@ -22,11 +22,11 @@ export abstract class Client extends Receiver {
   }
 
   protected sendMessage(
-    name: string,
+    key: string,
     parameters: any[],
     callback?: MessageCallback,
   ): Promise<any> | void {
-    const message = new Message(this._namespace, MessageType.Call, name, parameters);
+    const message = new Message(this._namespace, MessageType.Call, key, parameters);
     const correlations = this._getCorrelations(message.correlationId);
     if (callback) {
       correlations.yieldCallback = callback;
@@ -39,7 +39,7 @@ export abstract class Client extends Receiver {
     });
   }
 
-  protected async processMessage(message: IMessage, sendMessage: sendMessage): Promise<void> {
+  protected processMessage(message: IMessage): void {
     if (!message.correlationId) {
       return;
     }
@@ -47,11 +47,11 @@ export abstract class Client extends Receiver {
     const correlations = this._getCorrelations(message.correlationId);
 
     if (message.type === MessageType.Reply && correlations.replyCallback) {
-      correlations.replyCallback(message.parameters);
+      correlations.replyCallback(message.value);
     }
 
     if (message.type === MessageType.Yield && correlations.yieldCallback) {
-      correlations.yieldCallback(message.parameters);
+      correlations.yieldCallback(message.value);
     }
   }
 

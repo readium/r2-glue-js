@@ -1,20 +1,19 @@
 import { IMessage, Message, MessageType } from '../message';
-
 import { Receiver, sendMessage } from '../receiver';
+import { testMessage } from '../message.test';
 import Mock = jest.Mock;
 
 window.addEventListener = jest.fn();
 
-class ReceiverTest extends Receiver {
-  public constructor(namespace: string) {
+class TestReceiver extends Receiver {
+  constructor(namespace: string) {
     super(namespace);
   }
 
   public processMessage(message: IMessage, sendMessage: sendMessage): void {}
 }
 
-const testMessage = new Message('namespace', MessageType.Call, 'test', [0, 1, 2, 3]);
-const testReceiver = new ReceiverTest(testMessage.namespace);
+const testReceiver = new TestReceiver(testMessage.namespace);
 
 test('adds message event listener', () => {
   expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
@@ -48,17 +47,17 @@ describe('processing and responding to messages', () => {
     } as MessageEvent);
 
     const sendMessageCallback: sendMessage = (testReceiver.processMessage as Mock).mock.calls[0][1];
-    const expectedPostedMessage: IMessage = {
+    const expectedPostedMessage = {
       type: MessageType.Reply,
-      name: 'retest',
-      parameters: ['a', 'b', 'c'],
+      key: 'retest',
+      value: ['a', 'b', 'c'],
       correlationId: testMessage.correlationId,
     };
 
     sendMessageCallback(
       expectedPostedMessage.type,
-      expectedPostedMessage.name,
-      expectedPostedMessage.parameters,
+      expectedPostedMessage.key,
+      expectedPostedMessage.value,
     );
 
     expect(postMessageCall).toBeCalledWith(expect.any(Message), 'example.com');
