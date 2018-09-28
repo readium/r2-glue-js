@@ -20,7 +20,9 @@ export abstract class Receiver {
           return;
         }
 
-        event.source.postMessage(
+        const sourceWindow = <Window>event.source;
+
+        sourceWindow.postMessage(
           new Message(namespace, type, name, parameters, request.correlationId),
           event.origin,
         );

@@ -18,8 +18,6 @@ export class Dispatcher extends Receiver {
         },
         ...message.value,
       ])
-      .then((returnValue: any) =>
-        sendMessage(MessageType.Reply, message.key, returnValue),
-      );
+      .then((returnValue: any) => sendMessage(MessageType.Reply, message.key, returnValue));
   }
 }
