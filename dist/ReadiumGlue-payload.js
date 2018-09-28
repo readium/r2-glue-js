@@ -67,110 +67,6 @@ var ReadiumGlue = (function (exports) {
         }
     }
 
-    // tslint:disable
-    /**
-     * Returns a random v4 UUID
-     * See {@link https://gist.github.com/jed/982883}.
-     * @param [a] This is to not be used.
-     * @returns {string}
-     */
-    function uuid(a) {
-        if (a === void 0) { a = undefined; }
-        return a
-            ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
-            : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
-    }
-    // tslint:enable
-    function resolveEventTargetSelector(selector) {
-        if (selector === '@window') {
-            return [window];
-        }
-        if (selector === '@document') {
-            return [document];
-        }
-        return Array.from(document.querySelectorAll(selector));
-    }
-
-    var PROTOCOL_NAME = 'r2-glue-js';
-    var PROTOCOL_VERSION = '1.0.0';
-    var MessageType;
-    (function (MessageType) {
-        MessageType["Call"] = "call";
-        MessageType["Reply"] = "reply";
-        MessageType["Yield"] = "yield";
-    })(MessageType || (MessageType = {}));
-    var Message = /** @class */ (function () {
-        function Message(namespace, type, key, value, correlationId) {
-            this.namespace = namespace;
-            this.type = type;
-            this.key = key;
-            this.value = value;
-            this.correlationId = correlationId || uuid();
-            this.protocol = PROTOCOL_NAME;
-            this.version = PROTOCOL_VERSION;
-        }
-        Message.validate = function (message) {
-            return !!message.protocol && message.protocol === PROTOCOL_NAME;
-        };
-        return Message;
-    }());
-
-    var Receiver = /** @class */ (function () {
-        function Receiver(namespace) {
-            var _this = this;
-            window.addEventListener('message', function (event) {
-                var request = event.data;
-                if (!Message.validate(request) || request.namespace !== namespace) {
-                    return;
-                }
-                _this.processMessage(request, function (type, name, parameters) {
-                    if (!event.source) {
-                        return;
-                    }
-                    event.source.postMessage(new Message(namespace, type, name, parameters, request.correlationId), event.origin);
-                });
-            });
-        }
-        return Receiver;
-    }());
-
-    var Dispatcher = /** @class */ (function (_super) {
-        __extends(Dispatcher, _super);
-        function Dispatcher(namespace, handlerType) {
-            var _this = _super.call(this, namespace) || this;
-            _this._handler = new handlerType();
-            return _this;
-        }
-        Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this._handler.declarations[message.key]
-                .apply(this._handler, [
-                function () {
-                    var yieldValues = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        yieldValues[_i] = arguments[_i];
-                    }
-                    sendMessage(MessageType.Yield, message.key, yieldValues);
-                }
-            ].concat(message.value))
-                .then(function (returnValue) {
-                return sendMessage(MessageType.Reply, message.key, returnValue);
-            });
-        };
-        return Dispatcher;
-    }(Receiver));
-
-    var MessageHandler = /** @class */ (function () {
-        function MessageHandler() {
-        }
-        return MessageHandler;
-    }());
-
-    var EventHandlingMessage;
-    (function (EventHandlingMessage) {
-        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
-        EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
-    })(EventHandlingMessage || (EventHandlingMessage = {}));
-
     var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
     function unwrapExports (x) {
@@ -183,50 +79,49 @@ var ReadiumGlue = (function (exports) {
 
     /*! https://mths.be/cssesc v1.0.1 by @mathias */
 
-    const object = {};
-    const hasOwnProperty = object.hasOwnProperty;
-    const merge = (options, defaults) => {
+    var object = {};
+    var hasOwnProperty = object.hasOwnProperty;
+    var merge = function merge(options, defaults) {
     	if (!options) {
     		return defaults;
     	}
-    	const result = {};
-    	for (let key in defaults) {
+    	var result = {};
+    	for (var key in defaults) {
     		// `if (defaults.hasOwnProperty(key) { … }` is not needed here, since
     		// only recognized option names are used.
-    		result[key] = hasOwnProperty.call(options, key)
-    			? options[key]
-    			: defaults[key];
+    		result[key] = hasOwnProperty.call(options, key) ? options[key] : defaults[key];
     	}
     	return result;
     };
 
-    const regexAnySingleEscape = /[ -,\.\/;-@\[-\^`\{-~]/;
-    const regexSingleEscape = /[ -,\.\/;-@\[\]\^`\{-~]/;
-    const regexExcessiveSpaces = /(^|\\+)?(\\[A-F0-9]{1,6})\x20(?![a-fA-F0-9\x20])/g;
+    var regexAnySingleEscape = /[ -,\.\/;-@\[-\^`\{-~]/;
+    var regexSingleEscape = /[ -,\.\/;-@\[\]\^`\{-~]/;
+    var regexExcessiveSpaces = /(^|\\+)?(\\[A-F0-9]{1,6})\x20(?![a-fA-F0-9\x20])/g;
 
     // https://mathiasbynens.be/notes/css-escapes#css
-    const cssesc = (string, options) => {
+    var cssesc = function cssesc(string, options) {
     	options = merge(options, cssesc.options);
     	if (options.quotes != 'single' && options.quotes != 'double') {
     		options.quotes = 'single';
     	}
-    	const quote = options.quotes == 'double' ? '"' : '\'';
-    	const isIdentifier = options.isIdentifier;
+    	var quote = options.quotes == 'double' ? '"' : '\'';
+    	var isIdentifier = options.isIdentifier;
 
-    	const firstChar = string.charAt(0);
-    	let output = '';
-    	let counter = 0;
-    	const length = string.length;
+    	var firstChar = string.charAt(0);
+    	var output = '';
+    	var counter = 0;
+    	var length = string.length;
     	while (counter < length) {
-    		const character = string.charAt(counter++);
-    		let codePoint = character.charCodeAt();
-    		let value;
+    		var character = string.charAt(counter++);
+    		var codePoint = character.charCodeAt();
+    		var value = void 0;
     		// If it’s not a printable ASCII character…
     		if (codePoint < 0x20 || codePoint > 0x7E) {
     			if (codePoint >= 0xD800 && codePoint <= 0xDBFF && counter < length) {
     				// It’s a high surrogate, and there is a next character.
-    				const extra = string.charCodeAt(counter++);
-    				if ((extra & 0xFC00) == 0xDC00) { // next character is low surrogate
+    				var extra = string.charCodeAt(counter++);
+    				if ((extra & 0xFC00) == 0xDC00) {
+    					// next character is low surrogate
     					codePoint = ((codePoint & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000;
     				} else {
     					// It’s an unmatched surrogate; only append this code unit, in case
@@ -242,24 +137,14 @@ var ReadiumGlue = (function (exports) {
     				} else {
     					value = '\\' + codePoint.toString(16).toUpperCase() + ' ';
     				}
-    			// Note: `:` could be escaped as `\:`, but that fails in IE < 8.
+    				// Note: `:` could be escaped as `\:`, but that fails in IE < 8.
     			} else if (/[\t\n\f\r\x0B:]/.test(character)) {
     				if (!isIdentifier && character == ':') {
     					value = character;
     				} else {
     					value = '\\' + codePoint.toString(16).toUpperCase() + ' ';
     				}
-    			} else if (
-    				character == '\\' ||
-    				(
-    					!isIdentifier &&
-    					(
-    						(character == '"' && quote == character) ||
-    						(character == '\'' && quote == character)
-    					)
-    				) ||
-    				(isIdentifier && regexSingleEscape.test(character))
-    			) {
+    			} else if (character == '\\' || !isIdentifier && (character == '"' && quote == character || character == '\'' && quote == character) || isIdentifier && regexSingleEscape.test(character)) {
     				value = '\\' + character;
     			} else {
     				value = character;
@@ -283,7 +168,7 @@ var ReadiumGlue = (function (exports) {
     	// Remove spaces after `\HEX` escapes that are not followed by a hex digit,
     	// since they’re redundant. Note that this is only possible if the escape
     	// sequence isn’t preceded by an odd number of backslashes.
-    	output = output.replace(regexExcessiveSpaces, function($0, $1, $2) {
+    	output = output.replace(regexExcessiveSpaces, function ($0, $1, $2) {
     		if ($1 && $1.length % 2) {
     			// It’s not safe to remove the space, so don’t.
     			return $0;
@@ -311,13 +196,16 @@ var ReadiumGlue = (function (exports) {
     var cssesc_1 = cssesc;
 
     var dist = createCommonjsModule(function (module, exports) {
-    var __assign = (commonjsGlobal && commonjsGlobal.__assign) || Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
+    var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
+        __assign = Object.assign || function(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                    t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
     };
     var __generator = (commonjsGlobal && commonjsGlobal.__generator) || function (thisArg, body) {
         var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
@@ -326,8 +214,8 @@ var ReadiumGlue = (function (exports) {
         function step(op) {
             if (f) throw new TypeError("Generator is already executing.");
             while (_) try {
-                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [0, t.value];
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
                 switch (op[0]) {
                     case 0: case 1: t = op; break;
                     case 4: _.label++; return { value: op[1], done: false };
@@ -365,6 +253,7 @@ var ReadiumGlue = (function (exports) {
         Limit[Limit["One"] = 2] = "One";
     })(Limit || (Limit = {}));
     var config;
+    var rootDocument;
     function default_1(input, options) {
         if (input.nodeType !== Node.ELEMENT_NODE) {
             throw new Error("Can't generate CSS selector for non-element node type.");
@@ -374,6 +263,7 @@ var ReadiumGlue = (function (exports) {
         }
         var defaults = {
             root: document.body,
+            idName: function (name) { return true; },
             className: function (name) { return true; },
             tagName: function (name) { return true; },
             seedMinLength: 1,
@@ -381,6 +271,7 @@ var ReadiumGlue = (function (exports) {
             threshold: 1000,
         };
         config = __assign({}, defaults, options);
+        rootDocument = findRootDocument(config.root);
         var path = bottomUpSearch(input, Limit.All, function () {
             return bottomUpSearch(input, Limit.Two, function () {
                 return bottomUpSearch(input, Limit.One);
@@ -398,6 +289,9 @@ var ReadiumGlue = (function (exports) {
         }
     }
     exports.default = default_1;
+    function findRootDocument(rootNode) {
+        return (rootNode.nodeType === Node.DOCUMENT_NODE) ? rootNode : rootNode.ownerDocument;
+    }
     function bottomUpSearch(input, limit, fallback) {
         var path = null;
         var stack = [];
@@ -479,7 +373,7 @@ var ReadiumGlue = (function (exports) {
         return path.map(function (node) { return node.penalty; }).reduce(function (acc, i) { return acc + i; }, 0);
     }
     function unique(path) {
-        switch (document.querySelectorAll(selector(path)).length) {
+        switch (rootDocument.querySelectorAll(selector(path)).length) {
             case 0:
                 throw new Error("Can't select any node with this selector: " + selector(path));
             case 1:
@@ -489,9 +383,10 @@ var ReadiumGlue = (function (exports) {
         }
     }
     function id(input) {
-        if (input.id !== '') {
+        var elementId = input.getAttribute('id');
+        if (elementId && config.idName(elementId)) {
             return {
-                name: '#' + cssesc_1(input.id, { isIdentifier: true }),
+                name: '#' + cssesc_1(elementId, { isIdentifier: true }),
                 penalty: 0,
             };
         }
@@ -566,8 +461,8 @@ var ReadiumGlue = (function (exports) {
         return value !== null && value !== undefined;
     }
     function combinations(stack, path) {
-        if (path === void 0) { path = []; }
         var _i, _a, node;
+        if (path === void 0) { path = []; }
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -624,12 +519,130 @@ var ReadiumGlue = (function (exports) {
         });
     }
     function same(path, input) {
-        return document.querySelector(selector(path)) === input;
+        return rootDocument.querySelector(selector(path)) === input;
     }
 
     });
 
     var finder = unwrapExports(dist);
+
+    // tslint:disable
+    /**
+     * Returns a random v4 UUID
+     * See {@link https://gist.github.com/jed/982883}.
+     * @param [a] This is to not be used.
+     * @returns {string}
+     */
+    function uuid(a) {
+        if (a === void 0) { a = undefined; }
+        return a
+            ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
+            : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
+    }
+    // tslint:enable
+    function isEventTarget(input) {
+        return !!(input.addEventListener && input.removeEventListener && input.dispatchEvent);
+    }
+    function resolveEventTargetSelector(selector) {
+        if (selector === '@window') {
+            return [window];
+        }
+        if (selector === '@document') {
+            return [document];
+        }
+        return Array.from(document.querySelectorAll(selector));
+    }
+    function generateEventTargetSelector(eventTarget) {
+        if (eventTarget === window) {
+            return '@window';
+        }
+        if (eventTarget === document) {
+            return '@document';
+        }
+        if (eventTarget instanceof Element) {
+            // Generate a CSS selector for the Element
+            return finder(eventTarget);
+        }
+    }
+
+    var PROTOCOL_NAME = 'r2-glue-js';
+    var PROTOCOL_VERSION = '1.0.0';
+    var MessageType;
+    (function (MessageType) {
+        MessageType["Call"] = "call";
+        MessageType["Reply"] = "reply";
+        MessageType["Yield"] = "yield";
+    })(MessageType || (MessageType = {}));
+    var Message = /** @class */ (function () {
+        function Message(namespace, type, key, value, correlationId) {
+            this.namespace = namespace;
+            this.type = type;
+            this.key = key;
+            this.value = value;
+            this.correlationId = correlationId || uuid();
+            this.protocol = PROTOCOL_NAME;
+            this.version = PROTOCOL_VERSION;
+        }
+        Message.validate = function (message) {
+            return !!message.protocol && message.protocol === PROTOCOL_NAME;
+        };
+        return Message;
+    }());
+
+    var Receiver = /** @class */ (function () {
+        function Receiver(namespace) {
+            var _this = this;
+            window.addEventListener('message', function (event) {
+                var request = event.data;
+                if (!Message.validate(request) || request.namespace !== namespace) {
+                    return;
+                }
+                _this.processMessage(request, function (type, name, parameters) {
+                    if (!event.source) {
+                        return;
+                    }
+                    var sourceWindow = event.source;
+                    sourceWindow.postMessage(new Message(namespace, type, name, parameters, request.correlationId), event.origin);
+                });
+            });
+        }
+        return Receiver;
+    }());
+
+    var Dispatcher = /** @class */ (function (_super) {
+        __extends(Dispatcher, _super);
+        function Dispatcher(namespace, handlerType) {
+            var _this = _super.call(this, namespace) || this;
+            _this._handler = new handlerType();
+            return _this;
+        }
+        Dispatcher.prototype.processMessage = function (message, sendMessage) {
+            this._handler.declarations[message.key]
+                .apply(this._handler, [
+                function () {
+                    var yieldValues = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        yieldValues[_i] = arguments[_i];
+                    }
+                    sendMessage(MessageType.Yield, message.key, yieldValues);
+                }
+            ].concat(message.value))
+                .then(function (returnValue) { return sendMessage(MessageType.Reply, message.key, returnValue); });
+        };
+        return Dispatcher;
+    }(Receiver));
+
+    var MessageHandler = /** @class */ (function () {
+        function MessageHandler() {
+        }
+        return MessageHandler;
+    }());
+
+    var EventHandlingMessage;
+    (function (EventHandlingMessage) {
+        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
+        EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
+    })(EventHandlingMessage || (EventHandlingMessage = {}));
 
     var EVENT_PROPERTIES = [
         'type',
@@ -662,15 +675,8 @@ var ReadiumGlue = (function (exports) {
     }
     function marshalObject(obj) {
         return JSON.parse(JSON.stringify(obj, function (key, value) {
-            if (value instanceof Window) {
-                return '@window';
-            }
-            if (value instanceof Document) {
-                return '@document';
-            }
-            if (value instanceof Element) {
-                // Generate a CSS selector for the Element
-                return finder(value);
+            if (isEventTarget(value)) {
+                return generateEventTargetSelector(value);
             }
             return value;
         }));
