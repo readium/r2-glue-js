@@ -48,6 +48,7 @@
   },
   "homepage": "https://github.com/readium/r2-glue-js#readme",
   "main": "./dist/ReadiumGlue.js",
+  "types": "./dist/r2-glue-js.d.ts",
   "files": [
     "dist",
     "LICENSE",
@@ -55,7 +56,9 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && rollup -c",
+    "build": "npm run clean && npm run build:src && npm run build:types",
+    "build:src": "rollup -c",
+    "build:types": "dts-bundle --configJson dts-bundle.config.json",
     "test": "jest",
     "lint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts' 'test/**/*.ts'",
     "format": "prettier --config .prettierrc --write src/**/**.ts",
@@ -69,6 +72,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.2",
     "concurrently": "^4.0.1",
+    "dts-bundle": "^0.7.3",
     "jest": "^23.6.0",
     "node-static": "^0.7.11",
     "prettier": "^1.14.3",

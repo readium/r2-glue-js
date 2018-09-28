@@ -1,0 +1,6 @@
+{
+  "name": "r2-glue-js",
+  "main": "./dist/clients.d.ts",
+  "out": "r2-glue-js.d.ts",
+  "outputAsModuleFolder": true
+}
