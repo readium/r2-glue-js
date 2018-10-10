@@ -51,6 +51,18 @@ export default [
     input: './src/clients.ts',
     output: [
       {
+        file: pkg.module,
+        format: 'es',
+        name: 'ReadiumGlue',
+        sourcemap: true,
+      },
+    ],
+    plugins,
+  },
+  {
+    input: './src/clients.ts',
+    output: [
+      {
         file: pkg.main,
         format: 'umd',
         name: 'ReadiumGlue',

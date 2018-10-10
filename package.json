@@ -48,6 +48,7 @@
   },
   "homepage": "https://github.com/readium/r2-glue-js#readme",
   "main": "./dist/ReadiumGlue.js",
+  "module": "./dist/ReadiumGlue.esm.js",
   "types": "./dist/r2-glue-js.d.ts",
   "files": [
     "dist",
