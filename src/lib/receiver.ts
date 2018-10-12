@@ -1,4 +1,8 @@
 import { IMessage, Message, MessageType } from './message';
+// TODO: Remove this when we have an appropriate solution for removing these event messages
+declare global {
+  interface Window { glueEventMessageRemovers: any; }
+}
 
 interface IMessageEvent extends MessageEvent {
   readonly data: IMessage;
@@ -7,8 +11,12 @@ interface IMessageEvent extends MessageEvent {
 export type sendMessage = (type: MessageType, name: string, parameters: any[]) => void;
 
 export abstract class Receiver {
+  private handler: (event: IMessageEvent) => void;
+
   protected constructor(namespace: string) {
-    window.addEventListener('message', (event: IMessageEvent) => {
+    this.destroy = this.destroy.bind(this);
+
+    this.handler = (event: IMessageEvent) => {
       const request = event.data;
 
       if (!Message.validate(request) || request.namespace !== namespace) {
@@ -27,7 +35,13 @@ export abstract class Receiver {
           event.origin,
         );
       });
-    });
+    };
+
+    window.addEventListener('message', this.handler);
+  }
+
+  public destroy(): void {
+    window.removeEventListener('message', this.handler);
   }
 
   protected abstract processMessage(message: IMessage, sendMessage: sendMessage): void;

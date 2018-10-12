@@ -40,28 +40,38 @@
         max-width: 95%;
       }
     }
-    select {
+    #menu {
       position: absolute;
       top: 10px;
       left: 10px;
     }
+    #testPicker, #test-menu {
+      position: relative;
+      float: left;
+      margin: 0 0.5rem 0 0;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
-  <select id="testPicker">
-      <option value="test-000.xhtml" selected="">Sample content</option>
-      <option value="test-001.xhtml">Form elements</option>
-      <option value="test-002.xhtml">Contenteditable div</option>
-      <option value="test-003.xhtml">Scripted form element</option> 
-      <option value="test-004.xhtml">Audio controls with div</option> 
-      <option value="test-005.xhtml">Audio controls with buttons</option> 
-      <option value="test-006.xhtml">Links</option> 
-      <option value="test-007.xhtml">Layout change</option> 
-      <option value="test-008.xhtml">Details element</option> 
-      <option value="test-009.xhtml">Canvas interaction</option> 
-  </select>
+  <div id='menu'>
+      <select id="testPicker">
+          <option value="test-000.xhtml" selected="">Sample content</option>
+          <option value="test-001.xhtml">Form elements</option>
+          <option value="test-002.xhtml">Contenteditable div</option>
+          <option value="test-003.xhtml">Scripted form element</option> 
+          <option value="test-004.xhtml">Audio controls with div</option> 
+          <option value="test-005.xhtml">Audio controls with buttons</option> 
+          <option value="test-006.xhtml">Links</option> 
+          <option value="test-007.xhtml">Layout change</option> 
+          <option value="test-008.xhtml">Details element</option> 
+          <option value="test-009.xhtml">Canvas interaction</option> 
+      </select>
+      <div id='test-menu'></div>
+  </div>
   <iframe id="page" allowtransparency="true" scrolling="no"></iframe>
   <script type="text/javascript" src="/dist/ReadiumGlue.js"></script>
   <script type="text/javascript" src="demo-script.js"></script>
+  <script type="text/javascript" src="demo-menu.js"></script>
 </body>
 </html>

@@ -6,19 +6,23 @@ export class KeyHandling extends Client {
     super('key-handling', targetWindow);
   }
 
-  public addKeyEventListener(
+  public async addKeyEventListener(
     target: string,
     eventType: string,
     keyCode: string,
     listener: EventListener,
     options: IAddKeyListenerOptions = {},
-  ): void {
-    this.sendMessage(
+  ): Promise<number> {
+    return this.sendMessage(
       KeyHandlingMessage.AddKeyEventListener,
       [target, eventType, keyCode, options],
       (event) => {
         listener(event);
       },
     );
+  }
+
+  public removeKeyEventListener(listenerID: number): void {
+    this.sendMessage(KeyHandlingMessage.RemoveKeyEventListener, [listenerID]);
   }
 }

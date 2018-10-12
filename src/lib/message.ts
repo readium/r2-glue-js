@@ -22,6 +22,8 @@ export interface IMessage {
   readonly value: any;
 }
 
+let messageCount = 0;
+
 export class Message implements IMessage {
   public readonly protocol: string;
   public readonly version: string;
@@ -47,7 +49,8 @@ export class Message implements IMessage {
     this.key = key;
     this.value = value;
 
-    this.correlationId = correlationId || uuid();
+    this.correlationId = correlationId || `${messageCount}`; // uuid();
+    messageCount += 1;
 
     this.protocol = PROTOCOL_NAME;
     this.version = PROTOCOL_VERSION;

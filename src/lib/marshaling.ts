@@ -22,7 +22,7 @@ export const UI_EVENT_PROPERTIES = ['view', 'detail'];
 export function marshalEvent(event: Event, enumeratedProperties: string[] = []): any {
   let propertiesToEnumerate = [...EVENT_PROPERTIES, ...enumeratedProperties];
   if (event instanceof UIEvent) {
-    propertiesToEnumerate = [...UI_EVENT_PROPERTIES];
+    propertiesToEnumerate = [...enumeratedProperties, ...UI_EVENT_PROPERTIES];
   }
   const eventObject: any = {};
   propertiesToEnumerate.forEach((key) => {
