@@ -1,6 +1,6 @@
 import { Message, MessageType } from '../message';
 
-export const testMessage = new Message('namespace', MessageType.Call, 'test', [0, 1, 2, 3]);
+export const testMessage = new Message('namespace', MessageType.Invoke, 'test', [0, 1, 2, 3]);
 
 test('message has unique correlation identifier', () => {
   const duplicatedMessage = new Message(

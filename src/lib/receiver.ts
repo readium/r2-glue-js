@@ -44,5 +44,5 @@ export abstract class Receiver {
     window.removeEventListener('message', this.handler);
   }
 
-  protected abstract processMessage(message: IMessage, sendMessage: sendMessage): void;
+  protected abstract processMessage(message: IMessage, sendMessage?: sendMessage): void;
 }

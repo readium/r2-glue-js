@@ -13,14 +13,14 @@ const testMessage: IMessage = {
   value: 'hello',
 };
 
-const expectedReplyResponse: IMessage = {
+const expectedReturnResponse: IMessage = {
   ...testMessage,
-  type: MessageType.Reply,
+  type: MessageType.Return,
   value: 'pong',
 };
-const expectedYieldResponse: IMessage = {
+const expectedCallbackResponse: IMessage = {
   ...testMessage,
-  type: MessageType.Yield,
+  type: MessageType.Callback,
   value: 'world',
 };
 
@@ -30,7 +30,7 @@ class TestClient extends Client {
   }
 
   public sendSync(message: IMessage): void {
-    super.sendMessage(message.key, testMessage.value);
+    super.sendMessage(message.key, message.value);
   }
   public async sendAsync(message: IMessage, callback: MessageCallback): Promise<string> {
     return super.sendMessage(message.key, message.value, callback);
@@ -47,7 +47,7 @@ test('posts messages to target window', () => {
   testClient.sendSync(testMessage);
   const expectedPostedMessage = new Message(
     testNamespace,
-    MessageType.Call,
+    MessageType.Invoke,
     testMessage.key,
     testMessage.value,
   );
@@ -64,11 +64,11 @@ test('handles messages from target window', async () => {
   // simulate the target responding
   const postMessageMock = mockWindow.postMessage.mock;
   const postedMessage = postMessageMock.calls[postMessageMock.calls.length - 1][0];
-  const replyResponse = { ...postedMessage, ...expectedReplyResponse };
-  testClient.processMessage(replyResponse);
-  const yieldResponse = { ...postedMessage, ...expectedYieldResponse };
-  testClient.processMessage(yieldResponse);
+  const returnResponse = { ...postedMessage, ...expectedReturnResponse };
+  testClient.processMessage(returnResponse);
+  const callbackResponse = { ...postedMessage, ...expectedCallbackResponse };
+  testClient.processMessage(callbackResponse);
 
-  expect(await sendPromise).toBe(expectedReplyResponse.value);
-  expect(callback).toHaveBeenCalledWith(expectedYieldResponse.value);
+  expect(await sendPromise).toBe(expectedReturnResponse.value);
+  expect(callback).toHaveBeenCalledWith(expectedCallbackResponse.value);
 });

@@ -48,7 +48,7 @@ describe('processing and responding to messages', () => {
 
     const sendMessageCallback: sendMessage = (testReceiver.processMessage as Mock).mock.calls[0][1];
     const postedMessage = {
-      type: MessageType.Reply,
+      type: MessageType.Return,
       key: 'retest',
       value: ['a', 'b', 'c'],
       correlationId: testMessage.correlationId,

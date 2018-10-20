@@ -11,13 +11,17 @@ export class Dispatcher extends Receiver {
   }
 
   protected processMessage(message: IMessage, sendMessage: sendMessage): void {
+    this._handleRequest(message, sendMessage);
+  }
+
+  private _handleRequest(message: IMessage, sendResponse: sendMessage): void {
     this._handler.declarations[message.key]
       .apply(this._handler, [
-        (...yieldValues: any[]) => {
-          sendMessage(MessageType.Yield, message.key, yieldValues);
+        (...callbackArgs: any[]) => {
+          sendResponse(MessageType.Callback, message.key, callbackArgs);
         },
         ...message.value,
       ])
-      .then((returnValue: any) => sendMessage(MessageType.Reply, message.key, returnValue));
+      .then((returnValue: any) => sendResponse(MessageType.Return, message.key, returnValue));
   }
 }

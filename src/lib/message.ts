@@ -4,9 +4,9 @@ const PROTOCOL_NAME = 'r2-glue-js';
 const PROTOCOL_VERSION = '1.0.0';
 
 export enum MessageType {
-  Call = 'call',
-  Reply = 'reply',
-  Yield = 'yield',
+  Invoke = 'invoke',
+  Return = 'return',
+  Callback = 'callback',
 }
 
 export interface IMessage {
