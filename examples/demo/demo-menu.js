@@ -11,10 +11,12 @@ class DemoMenu {
             if (this.keyGlue && this.keyGlue.destroy) this.keyGlue.destroy();
             if (this.eventGlue && this.eventGlue.destroy) this.eventGlue.destroy();
             if (this.linkGlue && this.linkGlue.destroy) this.linkGlue.destroy();
+            if (this.selGlue && this.selGlue.destroy) this.selGlue.destroy();
 
             this.keyGlue = new window.ReadiumGlue.KeyHandling(this.testFrame.contentWindow);
             this.eventGlue = new window.ReadiumGlue.EventHandling(this.testFrame.contentWindow);
-            this.linkGlue = new window.ReadiumGlue.LinkHandling(this.testFrame.contentWindow);
+            this.selGlue = new window.ReadiumGlue.SelectionHandling(this.testFrame.contentWindow);
+            this.highlighting = new window.ReadiumGlue.Highlighting(this.testFrame.contentWindow);
         });
 
         this.testPicker.onchange = () => {
@@ -30,6 +32,7 @@ class DemoMenu {
         switch (testIndex) {
             case 0: // Sample content
                 this._addPageNavigation();
+                this._addSelectionHandling();
                 break;
             case 1: // Form elements
                 this._addAlert('input:nth-child(6)', 'Reset was clicked!' );
@@ -167,16 +170,16 @@ class DemoMenu {
         });
 
         // Change page on click
-        const testBody = this.testFrame.contentWindow;
-        testBody.addEventListener('click', (event) => {
-            const width = testBody.innerWidth;
-            const x = event.clientX;
-            if (x > width/2) {
-                this.nextPage();
-            } else {
-                this.previousPage();
-            }
-        });
+        // const testBody = this.testFrame.contentWindow;
+        // testBody.addEventListener('click', (event) => {
+        //     const width = testBody.innerWidth;
+        //     const x = event.clientX;
+        //     if (x > width/2) {
+        //         this.nextPage();
+        //     } else {
+        //         this.previousPage();
+        //     }
+        // });
     }
 
     async _addLinkHandling() {
@@ -194,6 +197,15 @@ class DemoMenu {
                 const num = Number.parseInt(testPage.slice(index+5, index+8));
                 this.setTest(num);
             }
+        });
+    }
+
+    async _addSelectionHandling() {
+        this.selGlue.addEventListener('body', (opts) => {
+            const rangeData = opts[0].rangeData;
+            this.highlighting.createHighlight(rangeData, (opts) => {
+                console.log(opts);
+            }, {test: 'test'});
         });
     }
 

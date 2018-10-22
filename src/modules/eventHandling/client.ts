@@ -2,6 +2,8 @@ import { Client } from '../../lib/client';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
 export class EventHandling extends Client {
+  public readonly typeName: string = 'EventHandling';
+
   public constructor(targetWindow: Window) {
     super('event-handling', targetWindow);
   }

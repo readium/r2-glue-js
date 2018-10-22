@@ -9,6 +9,7 @@ interface MessageResponseInvokers {
 }
 
 export abstract class Client extends Receiver {
+  public abstract readonly typeName: string = 'Client';
   private readonly _targetWindow: Window;
   private readonly _namespace: string;
 

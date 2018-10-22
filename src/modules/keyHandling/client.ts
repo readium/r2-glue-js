@@ -2,6 +2,8 @@ import { Client } from '../../lib/client';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
 export class KeyHandling extends Client {
+  public readonly typeName: string = 'KeyHandling';
+
   public constructor(targetWindow: Window) {
     super('key-handling', targetWindow);
   }
