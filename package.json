@@ -71,23 +71,23 @@
     "@medv/finder": "^1.1.0"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.2",
+    "@types/jest": "^23.3.9",
     "concurrently": "^4.0.1",
     "dts-bundle": "^0.7.3",
     "jest": "^23.6.0",
     "node-static": "^0.7.11",
     "prettier": "^1.14.3",
     "rimraf": "^2.6.2",
-    "rollup": "^0.66.2",
-    "rollup-plugin-commonjs": "^9.1.8",
+    "rollup": "^0.67.0",
+    "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-multi-entry": "^2.0.2",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-typescript2": "^0.17.0",
-    "ts-jest": "^23.10.2",
+    "rollup-plugin-typescript2": "^0.17.2",
+    "ts-jest": "^23.10.4",
     "tslint": "^5.11.0",
     "tslint-config-airbnb": "^5.11.0",
     "tslint-eslint-rules": "^5.4.0",
     "tslint-language-service": "^0.9.9",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.6"
   }
 }
