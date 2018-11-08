@@ -17,12 +17,9 @@ var ReadiumGlue = (function (exports) {
     ***************************************************************************** */
     /* global Reflect, Promise */
 
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
 
     function __extends(d, b) {
         extendStatics(d, b);
@@ -46,8 +43,8 @@ var ReadiumGlue = (function (exports) {
         function step(op) {
             if (f) throw new TypeError("Generator is already executing.");
             while (_) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
+                if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [0, t.value];
                 switch (op[0]) {
                     case 0: case 1: t = op; break;
                     case 4: _.label++; return { value: op[1], done: false };
@@ -67,10 +64,157 @@ var ReadiumGlue = (function (exports) {
         }
     }
 
+    var PROTOCOL_NAME = 'r2-glue-js';
+    var PROTOCOL_VERSION = '1.0.0';
+    var MessageType;
+    (function (MessageType) {
+        MessageType["Invoke"] = "invoke";
+        MessageType["Return"] = "return";
+        MessageType["Callback"] = "callback";
+    })(MessageType || (MessageType = {}));
+    var messageCount = 0;
+    var Message = /** @class */ (function () {
+        function Message(namespace, type, key, value, correlationId) {
+            this.namespace = namespace;
+            this.type = type;
+            this.key = key;
+            this.value = value;
+            this.correlationId = correlationId || "" + messageCount; // uuid();
+            messageCount += 1;
+            this.protocol = PROTOCOL_NAME;
+            this.version = PROTOCOL_VERSION;
+        }
+        Message.validate = function (message) {
+            return !!message.protocol && message.protocol === PROTOCOL_NAME;
+        };
+        return Message;
+    }());
+
+    var Receiver = /** @class */ (function () {
+        function Receiver(namespace) {
+            var _this = this;
+            this.destroy = this.destroy.bind(this);
+            this.handler = function (event) {
+                var request = event.data;
+                if (!Message.validate(request) || request.namespace !== namespace) {
+                    return;
+                }
+                _this.processMessage(request, function (type, name, parameters) {
+                    if (!event.source) {
+                        return;
+                    }
+                    var sourceWindow = event.source;
+                    sourceWindow.postMessage(new Message(namespace, type, name, parameters, request.correlationId), event.origin);
+                });
+            };
+            window.addEventListener('message', this.handler);
+        }
+        Receiver.prototype.destroy = function () {
+            window.removeEventListener('message', this.handler);
+        };
+        return Receiver;
+    }());
+
+    var Dispatcher = /** @class */ (function (_super) {
+        __extends(Dispatcher, _super);
+        function Dispatcher(namespace, handlerType) {
+            var _this = _super.call(this, namespace) || this;
+            _this._handler = new handlerType();
+            return _this;
+        }
+        Dispatcher.prototype.processMessage = function (message, sendMessage) {
+            this._handleRequest(message, sendMessage);
+        };
+        Dispatcher.prototype._handleRequest = function (message, sendResponse) {
+            this._handler.declarations[message.key]
+                .apply(this._handler, [
+                function () {
+                    var callbackArgs = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        callbackArgs[_i] = arguments[_i];
+                    }
+                    sendResponse(MessageType.Callback, message.key, callbackArgs);
+                }
+            ].concat(message.value))
+                .then(function (returnValue) { return sendResponse(MessageType.Return, message.key, returnValue); });
+        };
+        return Dispatcher;
+    }(Receiver));
+
+    var MessageHandler = /** @class */ (function () {
+        function MessageHandler() {
+        }
+        return MessageHandler;
+    }());
+
+    var AbstractEventManager = /** @class */ (function () {
+        function AbstractEventManager() {
+            this.lastEventID = 0;
+            this.registeredEventHandlers = {};
+        }
+        AbstractEventManager.prototype.getEventHandler = function (eventID) {
+            return this.registeredEventHandlers[eventID];
+        };
+        AbstractEventManager.prototype.generateEventID = function () {
+            return this.lastEventID += 1;
+        };
+        AbstractEventManager.prototype.addEventListener = function (eventType, callback, options) {
+            var id = this.generateEventID();
+            this.registeredEventHandlers[id] = {
+                eventType: eventType,
+                callback: callback,
+                options: options,
+            };
+            return id;
+        };
+        AbstractEventManager.prototype.removeEventListener = function (id) {
+            delete this.registeredEventHandlers[id];
+        };
+        return AbstractEventManager;
+    }());
+
+    var EventManager = /** @class */ (function (_super) {
+        __extends(EventManager, _super);
+        function EventManager() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.registeredEventRemovers = {};
+            return _this;
+        }
+        EventManager.prototype.addEventListener = function (type, callback, options, resolvedTargets) {
+            var resolved = resolvedTargets;
+            if (!(resolved && resolved.length))
+                resolved = [window];
+            var listenerRemovers = resolved.map(function (resolvedTarget) {
+                resolvedTarget.addEventListener(type, callback, options);
+                return function () {
+                    resolvedTarget.removeEventListener(type, callback, options);
+                };
+            });
+            var id = _super.prototype.addEventListener.call(this, type, callback, options);
+            this.registeredEventRemovers[id] = listenerRemovers;
+            return id;
+        };
+        EventManager.prototype.removeEventListener = function (id) {
+            _super.prototype.removeEventListener.call(this, id);
+            var eventRemovers = this.registeredEventRemovers[id] || [];
+            eventRemovers.forEach(function (remove) {
+                remove();
+            });
+            delete this.registeredEventRemovers[id];
+        };
+        return EventManager;
+    }(AbstractEventManager));
+
+    var EventHandlingMessage;
+    (function (EventHandlingMessage) {
+        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
+        EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
+    })(EventHandlingMessage || (EventHandlingMessage = {}));
+
     var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
     function unwrapExports (x) {
-    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
     }
 
     function createCommonjsModule(fn, module) {
@@ -271,7 +415,7 @@ var ReadiumGlue = (function (exports) {
             threshold: 1000,
         };
         config = __assign({}, defaults, options);
-        rootDocument = findRootDocument(config.root);
+        rootDocument = findRootDocument(config.root, defaults);
         var path = bottomUpSearch(input, Limit.All, function () {
             return bottomUpSearch(input, Limit.Two, function () {
                 return bottomUpSearch(input, Limit.One);
@@ -289,8 +433,14 @@ var ReadiumGlue = (function (exports) {
         }
     }
     exports.default = default_1;
-    function findRootDocument(rootNode) {
-        return (rootNode.nodeType === Node.DOCUMENT_NODE) ? rootNode : rootNode.ownerDocument;
+    function findRootDocument(rootNode, defaults) {
+        if (rootNode.nodeType === Node.DOCUMENT_NODE) {
+            return rootNode;
+        }
+        if (rootNode === defaults.root) {
+            return rootNode.ownerDocument;
+        }
+        return rootNode;
     }
     function bottomUpSearch(input, limit, fallback) {
         var path = null;
@@ -426,11 +576,11 @@ var ReadiumGlue = (function (exports) {
             return null;
         }
         var i = 0;
-        while (true) {
+        while (child) {
             if (child.nodeType === Node.ELEMENT_NODE) {
                 i++;
             }
-            if (child === input || !child.nextSibling) {
+            if (child === input) {
                 break;
             }
             child = child.nextSibling;
@@ -526,19 +676,6 @@ var ReadiumGlue = (function (exports) {
 
     var finder = unwrapExports(dist);
 
-    // tslint:disable
-    /**
-     * Returns a random v4 UUID
-     * See {@link https://gist.github.com/jed/982883}.
-     * @param [a] This is to not be used.
-     * @returns {string}
-     */
-    function uuid(a) {
-        if (a === void 0) { a = undefined; }
-        return a
-            ? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)
-            : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
-    }
     // tslint:enable
     function isEventTarget(input) {
         return !!(input.addEventListener && input.removeEventListener && input.dispatchEvent);
@@ -564,85 +701,60 @@ var ReadiumGlue = (function (exports) {
             return finder(eventTarget);
         }
     }
-
-    var PROTOCOL_NAME = 'r2-glue-js';
-    var PROTOCOL_VERSION = '1.0.0';
-    var MessageType;
-    (function (MessageType) {
-        MessageType["Call"] = "call";
-        MessageType["Reply"] = "reply";
-        MessageType["Yield"] = "yield";
-    })(MessageType || (MessageType = {}));
-    var Message = /** @class */ (function () {
-        function Message(namespace, type, key, value, correlationId) {
-            this.namespace = namespace;
-            this.type = type;
-            this.key = key;
-            this.value = value;
-            this.correlationId = correlationId || uuid();
-            this.protocol = PROTOCOL_NAME;
-            this.version = PROTOCOL_VERSION;
+    // tslint:disable
+    // Grabbed from:
+    //   https://gist.github.com/leofavre/d029cdda0338d878889ba73c88319295
+    /**
+     * Returns an array with all DOM elements affected by an event.
+     * The function serves as a polyfill for
+     * [`Event.composedPath()`](https://dom.spec.whatwg.org/#dom-event-composedpath).
+     *
+     * @category Event
+     * @param {Event} evt The triggered event.
+     * @return {Array.<HTMLElement>} The DOM elements affected by the event.
+     *
+     * @example
+     * let domChild = document.createElement("div"),
+     * 	domParent = document.createElement("div"),
+     * 	domGrandparent = document.createElement("div"),
+     * 	body = document.body,
+     * 	html = document.querySelector("html");
+     *
+     * domParent.appendChild(domChild);
+     * domGrandparent.appendChild(domParent);
+     * body.appendChild(domGrandparent);
+     *
+     * domChild.addEventListener("click", dealWithClick);
+     * const dealWithClick = evt => getEventPath(evt);
+     *
+     * // when domChild is clicked:
+     * // => [domChild, domParent, domGrandparent, body, html, document, window]
+     */
+    function eventPath(evt) {
+        var path = (evt.composedPath && evt.composedPath()) || evt.path, target = evt.target;
+        if (path != null) {
+            // Safari doesn't include Window, and it should.
+            path = (path.indexOf(window) < 0) ? path.concat([window]) : path;
+            return path;
         }
-        Message.validate = function (message) {
-            return !!message.protocol && message.protocol === PROTOCOL_NAME;
-        };
-        return Message;
-    }());
-
-    var Receiver = /** @class */ (function () {
-        function Receiver(namespace) {
-            var _this = this;
-            window.addEventListener('message', function (event) {
-                var request = event.data;
-                if (!Message.validate(request) || request.namespace !== namespace) {
-                    return;
-                }
-                _this.processMessage(request, function (type, name, parameters) {
-                    if (!event.source) {
-                        return;
-                    }
-                    var sourceWindow = event.source;
-                    sourceWindow.postMessage(new Message(namespace, type, name, parameters, request.correlationId), event.origin);
-                });
-            });
+        if (target === window) {
+            return [window];
         }
-        return Receiver;
-    }());
-
-    var Dispatcher = /** @class */ (function (_super) {
-        __extends(Dispatcher, _super);
-        function Dispatcher(namespace, handlerType) {
-            var _this = _super.call(this, namespace) || this;
-            _this._handler = new handlerType();
-            return _this;
+        function getParents(node, memo) {
+            memo = memo || [];
+            var parentNode = node.parentNode;
+            if (!parentNode) {
+                return memo;
+            }
+            else {
+                return getParents(parentNode, memo.concat([parentNode]));
+            }
         }
-        Dispatcher.prototype.processMessage = function (message, sendMessage) {
-            this._handler.declarations[message.key]
-                .apply(this._handler, [
-                function () {
-                    var yieldValues = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        yieldValues[_i] = arguments[_i];
-                    }
-                    sendMessage(MessageType.Yield, message.key, yieldValues);
-                }
-            ].concat(message.value))
-                .then(function (returnValue) { return sendMessage(MessageType.Reply, message.key, returnValue); });
-        };
-        return Dispatcher;
-    }(Receiver));
-
-    var MessageHandler = /** @class */ (function () {
-        function MessageHandler() {
-        }
-        return MessageHandler;
-    }());
-
-    var EventHandlingMessage;
-    (function (EventHandlingMessage) {
-        EventHandlingMessage["AddEventListener"] = "ADD_EVENT_LISTENER";
-        EventHandlingMessage["RemoveEventListener"] = "REMOVE_EVENT_LISTENER";
-    })(EventHandlingMessage || (EventHandlingMessage = {}));
+        return [target]
+            .concat(getParents(target))
+            .concat([window]);
+    }
+    // tslint:enable
 
     var EVENT_PROPERTIES = [
         'type',
@@ -665,7 +777,7 @@ var ReadiumGlue = (function (exports) {
         if (enumeratedProperties === void 0) { enumeratedProperties = []; }
         var propertiesToEnumerate = EVENT_PROPERTIES.concat(enumeratedProperties);
         if (event instanceof UIEvent) {
-            propertiesToEnumerate = UI_EVENT_PROPERTIES.slice();
+            propertiesToEnumerate = enumeratedProperties.concat(UI_EVENT_PROPERTIES);
         }
         var eventObject = {};
         propertiesToEnumerate.forEach(function (key) {
@@ -682,7 +794,6 @@ var ReadiumGlue = (function (exports) {
         }));
     }
 
-    var lastUsedID = 0;
     var EventHandler = /** @class */ (function (_super) {
         __extends(EventHandler, _super);
         function EventHandler() {
@@ -692,42 +803,37 @@ var ReadiumGlue = (function (exports) {
                 _a[EventHandlingMessage.AddEventListener] = _this._addEventListener,
                 _a[EventHandlingMessage.RemoveEventListener] = _this._removeEventListener,
                 _a);
-            _this.registeredEventListenerRemovers = {};
+            _this.eventManager = new EventManager();
             return _this;
         }
-        EventHandler.prototype._addEventListener = function (callback, target, type, properties, options) {
+        EventHandler.prototype.createHandler = function (callback, properties, options) {
+            return function (event) {
+                if (options.preventDefault) {
+                    event.preventDefault();
+                }
+                if (options.stopPropagation) {
+                    event.stopPropagation();
+                }
+                if (options.stopImmediatePropagation) {
+                    event.stopImmediatePropagation();
+                }
+                callback(marshalEvent(event, properties));
+            };
+        };
+        EventHandler.prototype._addEventListener = function (callback, target, eventType, properties, options) {
             return __awaiter(this, void 0, void 0, function () {
-                var targets, listenerRemovers;
+                var targets, handler;
                 return __generator(this, function (_a) {
                     targets = resolveEventTargetSelector(target);
-                    listenerRemovers = targets.map(function (resolvedTarget) {
-                        var listener = function (event) {
-                            if (options.preventDefault) {
-                                event.preventDefault();
-                            }
-                            if (options.stopPropagation) {
-                                event.stopPropagation();
-                            }
-                            if (options.stopImmediatePropagation) {
-                                event.stopImmediatePropagation();
-                            }
-                            callback(marshalEvent(event, properties));
-                        };
-                        resolvedTarget.addEventListener(type, listener);
-                        return function () {
-                            resolvedTarget.removeEventListener(type, listener);
-                        };
-                    });
-                    lastUsedID = lastUsedID + 1;
-                    this.registeredEventListenerRemovers[lastUsedID] = listenerRemovers;
-                    return [2 /*return*/, lastUsedID];
+                    handler = this.createHandler(callback, properties, options);
+                    return [2 /*return*/, this.eventManager.addEventListener(eventType, handler, options, targets)];
                 });
             });
         };
         EventHandler.prototype._removeEventListener = function (_a, listenerID) {
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_b) {
-                    (this.registeredEventListenerRemovers[listenerID] || []).forEach(function (remove) { return remove(); });
+                    this.eventManager.removeEventListener(listenerID);
                     return [2 /*return*/];
                 });
             });
@@ -740,6 +846,7 @@ var ReadiumGlue = (function (exports) {
     var KeyHandlingMessage;
     (function (KeyHandlingMessage) {
         KeyHandlingMessage["AddKeyEventListener"] = "ADD_KEY_EVENT_LISTENER";
+        KeyHandlingMessage["RemoveKeyEventListener"] = "REMOVE_KEY_EVENT_LISTENER";
     })(KeyHandlingMessage || (KeyHandlingMessage = {}));
 
     var KEYBOARD_EVENT_PROPERTIES = [
@@ -758,44 +865,299 @@ var ReadiumGlue = (function (exports) {
             var _a;
             var _this = _super.call(this) || this;
             _this.declarations = (_a = {},
-                _a[KeyHandlingMessage.AddKeyEventListener] = _this._addKeyEventListener,
+                _a[KeyHandlingMessage.AddKeyEventListener] = _this._addEventListener,
+                _a[KeyHandlingMessage.RemoveKeyEventListener] = _this._removeEventListener,
                 _a);
             _this.registeredKeyHandlers = {};
-            var keyboardEventHandler = function (event) {
+            _this.registeredKeyCodes = {};
+            _this.lastUsedID = 0;
+            _this.eventManager = new EventManager();
+            var keyboardEventHandler = _this._createEventHandler();
+            var options = { useCapture: true };
+            _this.eventManager.addEventListener('keydown', keyboardEventHandler, options);
+            _this.eventManager.addEventListener('keypress', keyboardEventHandler, options);
+            _this.eventManager.addEventListener('keyup', keyboardEventHandler, options);
+            return _this;
+        }
+        KeyHandler.prototype._createEventHandler = function () {
+            var _this = this;
+            return function (event) {
                 if (event.defaultPrevented) {
                     // Skip if event is already handled
                     return;
                 }
-                var matchingKeyHandlerSet = _this.registeredKeyHandlers[event.key] || [];
-                matchingKeyHandlerSet.forEach(function (handlerInfo) {
+                var matchingKeyCodeSet = _this.registeredKeyCodes[event.key] || [];
+                matchingKeyCodeSet.forEach(function (listenerID) {
+                    var handlerInfo = _this.registeredKeyHandlers[listenerID] || {};
                     if (handlerInfo.eventType !== event.type) {
                         return;
                     }
-                    if (handlerInfo.options.preventDefault) {
+                    if (handlerInfo.options && handlerInfo.options.preventDefault) {
                         event.preventDefault();
                     }
                     handlerInfo.callback(marshalEvent(event, KEYBOARD_EVENT_PROPERTIES));
                 });
             };
-            window.addEventListener('keydown', keyboardEventHandler, true);
-            window.addEventListener('keypress', keyboardEventHandler, true);
-            window.addEventListener('keyup', keyboardEventHandler, true);
-            return _this;
-        }
-        KeyHandler.prototype._addKeyEventListener = function (callback, target, eventType, keyCode, options) {
+        };
+        KeyHandler.prototype._addEventListener = function (callback, target, eventType, keyCode, options) {
             return __awaiter(this, void 0, void 0, function () {
+                var id;
                 return __generator(this, function (_a) {
+                    this.lastUsedID = this.lastUsedID + 1;
+                    id = this.lastUsedID;
+                    if (!this.registeredKeyHandlers[id]) {
+                        this.registeredKeyHandlers[id] = { eventType: eventType, callback: callback, options: options };
+                    }
+                    if (!this.registeredKeyCodes[keyCode]) {
+                        this.registeredKeyCodes[keyCode] = [];
+                    }
+                    this.registeredKeyCodes[keyCode].push(id);
+                    return [2 /*return*/, this.lastUsedID];
+                });
+            });
+        };
+        KeyHandler.prototype._removeEventListener = function (_a, listenerID) {
+            return __awaiter(this, void 0, void 0, function () {
+                var obj, _i, _b, key, index;
+                return __generator(this, function (_c) {
+                    delete this.registeredKeyHandlers[listenerID];
+                    obj = this.registeredKeyCodes;
+                    for (_i = 0, _b = Object.keys(obj); _i < _b.length; _i++) {
+                        key = _b[_i];
+                        index = obj[key].indexOf(listenerID);
+                        if (index >= 0) {
+                            obj[key].splice(index, 1);
+                            break;
+                        }
+                    }
                     return [2 /*return*/];
                 });
             });
         };
         return KeyHandler;
-    }(EventHandler));
+    }(MessageHandler));
 
     var index$1 = new Dispatcher('key-handling', KeyHandler);
 
+    var LinkHandler = /** @class */ (function (_super) {
+        __extends(LinkHandler, _super);
+        function LinkHandler() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        LinkHandler.prototype.createHandler = function (callback, properties, options) {
+            return function (event) {
+                var path = eventPath(event);
+                var i = 0;
+                var length = path.length;
+                var anchor = null;
+                // tslint:disable-next-line:no-increment-decrement
+                for (i; i < length; i++) {
+                    if (path[i].tagName === 'a')
+                        anchor = path[i];
+                }
+                if (!anchor)
+                    return;
+                var href = anchor && anchor.href;
+                if (!href)
+                    return;
+                event.preventDefault();
+                event.stopPropagation();
+                if (options.stopImmediatePropagation) {
+                    event.stopImmediatePropagation();
+                }
+                var newHref = { href: anchor.href };
+                var obj = marshalObject(newHref);
+                callback(obj);
+            };
+        };
+        return LinkHandler;
+    }(EventHandler));
+
+    var index$2 = new Dispatcher('link-handling', LinkHandler);
+
+    function createRangeData(range) {
+        // Ensure we don't use the Text node, so that it can be properly stringified later on
+        var startContainer = range.startContainer instanceof Text ?
+            range.startContainer.parentElement : range.startContainer;
+        var endContainer = range.endContainer instanceof Text ?
+            range.endContainer.parentElement : range.endContainer;
+        var startContainerPath = getElementPath(startContainer);
+        var endContainerPath = getElementPath(endContainer);
+        var rangeData = {
+            startOffset: range.startOffset,
+            startContainer: startContainerPath,
+            endOffset: range.endOffset,
+            endContainer: endContainerPath,
+        };
+        return rangeData;
+    }
+    function createRangeFromSelection(selection) {
+        return createRange(selection.anchorNode, selection.anchorOffset, selection.focusNode, selection.focusOffset);
+    }
+    function createRangeFromRangeData(rangeData) {
+        var startSelector = createSelectorFromStringArray(rangeData.startContainer);
+        var endSelector = createSelectorFromStringArray(rangeData.endContainer);
+        var startContainer = document.querySelector(startSelector);
+        var endContainer = document.querySelector(endSelector);
+        if (!startContainer || !endContainer) {
+            console.error('Element was not successfully retrieved with selector');
+            return new Range();
+        }
+        startContainer = getTextNode(startContainer);
+        endContainer = getTextNode(endContainer);
+        return createRange(startContainer, rangeData.startOffset, endContainer, rangeData.endOffset);
+    }
+    function createSelectorFromStringArray(array) {
+        var selector = '';
+        var value = '';
+        for (var i = array.length - 1; i >= 0; i -= 1) {
+            value = array[i];
+            // Ignore custom selectors, such as @window and @document
+            if (value.includes('@'))
+                continue;
+            if (selector.length !== 0)
+                selector += ' ';
+            selector += value;
+        }
+        return selector;
+    }
+    function createRange(startContainer, startOffset, endContainer, endOffset) {
+        var range = new Range();
+        var position = startContainer.compareDocumentPosition(endContainer);
+        var isBackwards = false;
+        if (position === 0) {
+            isBackwards = startOffset > endOffset;
+        }
+        if (position === startContainer.DOCUMENT_POSITION_PRECEDING) {
+            isBackwards = true;
+        }
+        var sc = isBackwards ? endContainer : startContainer;
+        var so = isBackwards ? endOffset : startOffset;
+        var ec = isBackwards ? startContainer : endContainer;
+        var eo = isBackwards ? startOffset : endOffset;
+        range.setStart(sc, so);
+        range.setEnd(ec, eo);
+        return range;
+    }
+    function getTextNode(element) {
+        var nodes = element.childNodes;
+        var node;
+        var textNode = undefined;
+        for (var i = 0; i < nodes.length; i += 1) {
+            node = nodes[i];
+            if (node.nodeType === Node.TEXT_NODE) {
+                textNode = node;
+                break;
+            }
+        }
+        return textNode;
+    }
+    function getElementPath(element, elements) {
+        var els = elements;
+        if (!els) {
+            els = [];
+        }
+        els.push(element);
+        var parentEl = element.parentElement;
+        // If a parent element exists, run this method again with that parent element
+        // Otherwise, return the elements with document and window appended to it
+        return parentEl ? getElementPath(parentEl, els) : addDocumentAndWindowToPath(els);
+    }
+    function addDocumentAndWindowToPath(elements) {
+        elements.push(document);
+        elements.push(window);
+        return elements;
+    }
+
+    var SelectionHandler = /** @class */ (function (_super) {
+        __extends(SelectionHandler, _super);
+        function SelectionHandler() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        SelectionHandler.prototype.createHandler = function (callback, properties, options) {
+            return function (event) {
+                event.preventDefault();
+                if (options.stopPropagation) {
+                    event.stopPropagation();
+                }
+                if (options.stopImmediatePropagation) {
+                    event.stopImmediatePropagation();
+                }
+                var selection = window.getSelection();
+                var text = selection.toString();
+                var isEmpty = text.trim().length === 0;
+                if (isEmpty)
+                    return;
+                var range = createRangeFromSelection(selection);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                var rangeData = createRangeData(range);
+                var obj = { text: text, rangeData: rangeData };
+                var ret = marshalObject(obj);
+                callback(ret);
+            };
+        };
+        return SelectionHandler;
+    }(EventHandler));
+
+    var index$3 = new Dispatcher('selection-handling', SelectionHandler);
+
+    var EventHandlingMessage$1;
+    (function (EventHandlingMessage) {
+        EventHandlingMessage["CreateHighlight"] = "CREATE_HIGHLIGHT";
+    })(EventHandlingMessage$1 || (EventHandlingMessage$1 = {}));
+
+    var Highlighter = /** @class */ (function (_super) {
+        __extends(Highlighter, _super);
+        function Highlighter() {
+            var _a;
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.declarations = (_a = {},
+                _a[EventHandlingMessage$1.CreateHighlight] = _this._createHighlight,
+                _a);
+            return _this;
+        }
+        Highlighter.prototype._createHighlight = function (callback, rangeData, options) {
+            return __awaiter(this, void 0, void 0, function () {
+                var range, highlights, clientRect, highlight;
+                return __generator(this, function (_a) {
+                    range = createRangeFromRangeData(rangeData);
+                    highlights = document.getElementById('highlights');
+                    if (!highlights)
+                        highlights = this._createHighlightContainer();
+                    clientRect = range.getBoundingClientRect();
+                    highlight = this._createHighlightDiv(clientRect);
+                    highlights.append(highlight);
+                    return [2 /*return*/, 1];
+                });
+            });
+        };
+        Highlighter.prototype._createHighlightContainer = function () {
+            var div = document.createElement('div');
+            div.setAttribute('id', 'highlights');
+            document.body.prepend(div);
+            return div;
+        };
+        Highlighter.prototype._createHighlightDiv = function (clientRect) {
+            var highlight = document.createElement('div');
+            highlight.style.setProperty('position', 'absolute');
+            highlight.style.setProperty('background', 'rgba(220, 255, 15, 0.40)');
+            highlight.style.setProperty('width', clientRect.width + "px");
+            highlight.style.setProperty('height', clientRect.height + "px");
+            highlight.style.setProperty('left', clientRect.left + "px");
+            highlight.style.setProperty('top', clientRect.top + "px");
+            return highlight;
+        };
+        return Highlighter;
+    }(MessageHandler));
+
+    var index$4 = new Dispatcher('highlighting', Highlighter);
+
     exports.eventHandling = index;
     exports.keyHandling = index$1;
+    exports.linkHandling = index$2;
+    exports.selectionHandling = index$3;
+    exports.highlighting = index$4;
 
     return exports;
 
