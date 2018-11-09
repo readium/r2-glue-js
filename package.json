@@ -1,6 +1,6 @@
 {
   "name": "r2-glue-js",
-  "version": "0.0.0",
+  "version": "0.0.0-alpha.0",
   "description": "This repo contains Javascript resources that are injected by a Readium-2 streamer or navigator.",
   "keywords": [
     "readium",
