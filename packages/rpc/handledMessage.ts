@@ -1,28 +1,10 @@
 import { uuid } from './util';
+import { Message, MessageType } from './message';
 
 const PROTOCOL_NAME = 'r2-glue-js';
 const PROTOCOL_VERSION = '1.0.0';
 
-export enum MessageType {
-  Call = 'call',
-  Reply = 'reply',
-  Yield = 'yield',
-}
-
-export interface IMessage {
-  readonly protocol?: string;
-  readonly version?: string;
-
-  readonly correlationId?: string;
-
-  readonly namespace?: string;
-  readonly type?: MessageType;
-
-  readonly key: string;
-  readonly value: any;
-}
-
-export class Message implements IMessage {
+export class HandledMessage implements Message {
   public readonly protocol: string;
   public readonly version: string;
 
@@ -53,7 +35,7 @@ export class Message implements IMessage {
     this.version = PROTOCOL_VERSION;
   }
 
-  public static validate(message: IMessage): boolean {
+  public static validate(message: Message): boolean {
     return !!message.protocol && message.protocol === PROTOCOL_NAME;
   }
 }

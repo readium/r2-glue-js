@@ -1,7 +1,7 @@
-import { Client } from '../../lib/client';
+import { Caller } from '../../../packages/rpc/caller';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
-export class KeyHandling extends Client {
+export class KeyHandling extends Caller {
   public constructor(targetWindow: Window) {
     super('key-handling', targetWindow);
   }

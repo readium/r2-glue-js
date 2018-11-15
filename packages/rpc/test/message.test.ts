@@ -1,9 +1,15 @@
-import { Message, MessageType } from '../message';
+import { MessageType } from '../message';
+import { HandledMessage } from '../handledMessage';
 
-export const testMessage = new Message('namespace', MessageType.Call, 'test', [0, 1, 2, 3]);
+export const testMessage = new HandledMessage('namespace', MessageType.Request, 'test', [
+  0,
+  1,
+  2,
+  3,
+]);
 
 test('message has unique correlation identifier', () => {
-  const duplicatedMessage = new Message(
+  const duplicatedMessage = new HandledMessage(
     testMessage.namespace,
     testMessage.type,
     testMessage.key,
@@ -14,7 +20,7 @@ test('message has unique correlation identifier', () => {
 });
 
 test('message uses provided correlation identifier', () => {
-  const messageWithCorrelationId = new Message(
+  const messageWithCorrelationId = new HandledMessage(
     testMessage.namespace,
     testMessage.type,
     testMessage.key,
@@ -28,6 +34,6 @@ test('message uses provided correlation identifier', () => {
 test('validates message', () => {
   const invalidMessage = { fruit: 'banana' };
   // @ts-ignore
-  expect(Message.validate(invalidMessage)).toBe(false);
-  expect(Message.validate(testMessage)).toBe(true);
+  expect(HandledMessage.validate(invalidMessage)).toBe(false);
+  expect(HandledMessage.validate(testMessage)).toBe(true);
 });

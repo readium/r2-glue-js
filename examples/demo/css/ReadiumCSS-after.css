@@ -765,7 +765,7 @@ body {
 }
 
 /* The following styles kick in if you define the typeScale variable in the DOM. 
-    No need to repeat declarations which don’t make use of the variable */
+    No need to repeat handlers which don’t make use of the variable */
 
 :root[style*="readium-advanced-on"][style*="--USER__typeScale"] h1 {
   font-size: calc(((1rem * var(--USER__typeScale)) * var(--USER__typeScale)) * var(--USER__typeScale)) !important;

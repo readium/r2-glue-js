@@ -13,7 +13,7 @@ const plugins = [
   // `check` must be turned off in watch mode... there's a potential bug with the ts rollup plugin
 ];
 
-const baseModuleEntries = ['./src/lib/dispatcher.ts', './src/lib/messageHandler.ts'];
+const baseModuleEntries = ['./src/lib/executor.ts', './src/lib/messageHandling.ts'];
 
 const buildModuleEntry = (input) => {
   const moduleName = path.basename(path.resolve(input, '..'));
@@ -48,7 +48,7 @@ export default [
   buildModuleEntry('./src/modules/eventHandling/index.ts'),
   buildModuleEntry('./src/modules/keyHandling/index.ts'),
   {
-    input: './src/clients.ts',
+    input: './src/callers.ts',
     output: [
       {
         file: pkg.main,

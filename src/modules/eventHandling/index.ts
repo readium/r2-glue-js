@@ -1,4 +1,4 @@
-import { Dispatcher } from '../../lib';
+import { Executor } from '../../../packages/rpc';
 import { EventHandler } from './handler';
 
-export default new Dispatcher('event-handling', EventHandler);
+export default new Executor('event-handling', EventHandler);

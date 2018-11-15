@@ -1,4 +1,4 @@
-import { Dispatcher } from '../../lib';
+import { Executor } from '../../../packages/rpc';
 import { KeyHandler } from './handler';
 
-export default new Dispatcher('key-handling', KeyHandler);
+export default new Executor('key-handling', KeyHandler);

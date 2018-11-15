@@ -1,11 +1,14 @@
-import { MessageHandler, MessageCallback, MessageResponders } from '../../lib';
+import {
+  CallbackFunction,
+  MessageHandlingDeclarations,
+} from '../../../packages/rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
-import { marshalEvent } from '../../lib/marshaling';
+import { marshalEvent } from '../../../packages/rpc/marshaling';
 import { EventHandler } from '../eventHandling/handler';
 
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
-  callback: MessageCallback;
+  callback: CallbackFunction;
   options: IAddKeyListenerOptions;
 }
 
@@ -21,7 +24,7 @@ const KEYBOARD_EVENT_PROPERTIES = [
 ];
 
 export class KeyHandler extends EventHandler {
-  declarations: MessageResponders = {
+  handlers: MessageHandlingDeclarations = {
     [KeyHandlingMessage.AddKeyEventListener]: this._addKeyEventListener,
   };
 
@@ -54,7 +57,7 @@ export class KeyHandler extends EventHandler {
   }
 
   private async _addKeyEventListener(
-    callback: MessageCallback,
+    callback: CallbackFunction,
     target: string,
     eventType: KeyEventType,
     keyCode?: string,

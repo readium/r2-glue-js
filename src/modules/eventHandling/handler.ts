@@ -1,12 +1,17 @@
-import { MessageHandler, MessageResponders, MessageCallback } from '../../lib';
+import {
+  MessageHandling,
+  CallbackFunction,
+  MessageHandlingDeclarations,
+} from '../../../packages/rpc';
+
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
-import { marshalEvent } from '../../lib/marshaling';
-import { resolveEventTargetSelector } from '../../lib/util';
+import { marshalEvent } from '../../../packages/rpc/marshaling';
+import { resolveEventTargetSelector } from '../../../packages/rpc/util';
 
 let lastUsedID = 0;
 
-export class EventHandler extends MessageHandler {
-  declarations: MessageResponders = {
+export class EventHandler extends MessageHandling {
+  handlers: MessageHandlingDeclarations = {
     [EventHandlingMessage.AddEventListener]: this._addEventListener,
     [EventHandlingMessage.RemoveEventListener]: this._removeEventListener,
   };
@@ -14,7 +19,7 @@ export class EventHandler extends MessageHandler {
   private registeredEventListenerRemovers: { [id: number]: Function[] } = {};
 
   private async _addEventListener(
-    callback: MessageCallback,
+    callback: CallbackFunction,
     target: string,
     type: string,
     properties: string[],
@@ -47,7 +52,7 @@ export class EventHandler extends MessageHandler {
     return lastUsedID;
   }
 
-  private async _removeEventListener({}: MessageCallback, listenerID: number): Promise<void> {
+  private async _removeEventListener({  }: CallbackFunction, listenerID: number): Promise<void> {
     (this.registeredEventListenerRemovers[listenerID] || []).forEach((remove) => remove());
   }
 }

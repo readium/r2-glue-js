@@ -1,19 +1,20 @@
-import { IMessage, Message, MessageType } from '../message';
-import { Receiver, sendMessage } from '../receiver';
+import { Message, MessageType } from '../message';
+import { HandledMessage } from '../handledMessage';
+import { Controller, SendMessageFunction } from '../controller';
 import { testMessage } from './message.test';
 import Mock = jest.Mock;
 
 window.addEventListener = jest.fn();
 
-class TestReceiver extends Receiver {
+class TestController extends Controller {
   constructor(namespace: string) {
     super(namespace);
   }
 
-  public processMessage(message: IMessage, sendMessage: sendMessage): void {}
+  public processMessage(message: Message, sendMessage: SendMessageFunction): void {}
 }
 
-const testReceiver = new TestReceiver(testMessage.namespace);
+const testController = new TestController(testMessage.namespace);
 
 test('adds message event listener', () => {
   expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
@@ -23,19 +24,19 @@ describe('processing and responding to messages', () => {
   const testListener: EventListener = (window.addEventListener as Mock).mock.calls[0][1];
 
   test('should process message', () => {
-    testReceiver.processMessage = jest.fn();
+    testController.processMessage = jest.fn();
     testListener({ data: testMessage } as MessageEvent);
-    expect(testReceiver.processMessage).toHaveBeenCalledWith(testMessage, expect.any(Function));
+    expect(testController.processMessage).toHaveBeenCalledWith(testMessage, expect.any(Function));
   });
 
   test('should not process an invalid message', () => {
-    testReceiver.processMessage = jest.fn();
+    testController.processMessage = jest.fn();
     testListener({ data: { fruit: 'banana' } } as MessageEvent);
-    expect(testReceiver.processMessage).not.toBeCalled();
+    expect(testController.processMessage).not.toBeCalled();
   });
 
   test('should post message back to source', () => {
-    testReceiver.processMessage = jest.fn();
+    testController.processMessage = jest.fn();
     const postMessageCall = jest.fn();
 
     testListener({
@@ -46,23 +47,20 @@ describe('processing and responding to messages', () => {
       origin: 'example.com',
     } as MessageEvent);
 
-    const sendMessageCallback: sendMessage = (testReceiver.processMessage as Mock).mock.calls[0][1];
+    const sendMessageCallback: SendMessageFunction = (testController.processMessage as Mock).mock
+      .calls[0][1];
     const postedMessage = {
-      type: MessageType.Reply,
+      type: MessageType.Respond,
       key: 'retest',
       value: ['a', 'b', 'c'],
       correlationId: testMessage.correlationId,
     };
 
-    sendMessageCallback(
-      postedMessage.type,
-      postedMessage.key,
-      postedMessage.value,
-    );
+    sendMessageCallback(postedMessage.type, postedMessage.key, postedMessage.value);
 
-    expect(postMessageCall).toBeCalledWith(expect.any(Message), 'example.com');
+    expect(postMessageCall).toBeCalledWith(expect.any(HandledMessage), 'example.com');
 
-    const actualPostedMessage: IMessage = postMessageCall.mock.calls[0][0];
+    const actualPostedMessage: Message = postMessageCall.mock.calls[0][0];
     expect(actualPostedMessage).toMatchObject(postedMessage);
   });
 });

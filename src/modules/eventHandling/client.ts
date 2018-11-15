@@ -1,7 +1,7 @@
-import { Client } from '../../lib/client';
+import { Caller } from '../../../packages/rpc/caller';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
-export class EventHandling extends Client {
+export class EventHandling extends Caller {
   public constructor(targetWindow: Window) {
     super('event-handling', targetWindow);
   }
