@@ -1,5 +1,5 @@
-import { MessageType } from '../message';
-import { HandledMessage } from '../handledMessage';
+import { MessageType } from '../src/message';
+import { HandledMessage } from '../src/handledMessage';
 
 export const testMessage = new HandledMessage('namespace', MessageType.Request, 'test', [
   0,

@@ -46,6 +46,10 @@
   },
   "rulesDirectory": [],
   "linterOptions": {
-    "exclude": []
+    "exclude": [
+      "node_modules",
+      "**/lib/**",
+      "**/node_modules/**"
+    ]
   }
 }

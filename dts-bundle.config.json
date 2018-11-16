@@ -1,6 +1,0 @@
-{
-  "name": "r2-glue-js",
-  "main": "./dist/callers.d.ts",
-  "out": "r2-glue-js.d.ts",
-  "outputAsModuleFolder": true
-}

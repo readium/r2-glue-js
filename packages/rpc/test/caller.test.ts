@@ -1,7 +1,7 @@
-import { Caller } from '../caller';
-import { Message, MessageType } from '../message';
-import { CallbackFunction } from '../messageHandling';
-import { HandledMessage } from '../handledMessage';
+import { Caller } from '../src/caller';
+import { Message, MessageType } from '../src/message';
+import { CallbackFunction } from '../src/messageHandling';
+import { HandledMessage } from '../src/handledMessage';
 
 const mockWindow = {
   postMessage: jest.fn(),

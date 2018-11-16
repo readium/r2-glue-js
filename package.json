@@ -1,92 +1,20 @@
 {
   "name": "r2-glue-js",
-  "version": "0.0.0",
-  "description": "This repo contains Javascript resources that are injected by a Readium-2 streamer or navigator.",
-  "keywords": [
-    "readium",
-    "readium2",
-    "epub",
-    "navigator",
-    "javascript",
-    "library",
-    "utils",
-    "pagination",
-    "scrolling",
-    "touch",
-    "pointer",
-    "gestures",
-    "swiping",
-    "pages",
-    "location",
-    "locator",
-    "cfi",
-    "footnotes",
-    "links",
-    "search",
-    "postmessage",
-    "interface",
-    "events"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/readium/r2-glue-js.git"
-  },
-  "author": {
-    "name": "Evident Point",
-    "organization": "Evident Point",
-    "url": "http://github.com/evidentpoint/"
-  },
-  "license": "BSD-3-Clause",
-  "licenses": [
-    {
-      "type": "BSD-3-Clause",
-      "url": "http://opensource.org/licenses/BSD-3-Clause"
-    }
-  ],
-  "bugs": {
-    "url": "https://github.com/readium/r2-glue-js/issues"
-  },
-  "homepage": "https://github.com/readium/r2-glue-js#readme",
-  "main": "./dist/ReadiumGlue.js",
-  "types": "./dist/r2-glue-js.d.ts",
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md"
-  ],
-  "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && npm run build:src && npm run build:types",
-    "build:src": "rollup -c",
-    "build:types": "dts-bundle --configJson dts-bundle.config.json",
-    "test": "jest",
-    "lint": "tslint --project tsconfig.json --config tslint.json 'src/**/*.ts' 'test/**/*.ts'",
-    "format": "prettier --config .prettierrc --write src/**/**.ts",
-    "watch": "WATCH=true npm run build -- -w",
-    "serve": "static -a 0.0.0.0 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' .",
-    "start": "concurrently \"npm:watch\" \"npm:serve\""
-  },
-  "dependencies": {
-    "@medv/finder": "^1.1.0"
-  },
+  "private": true,
   "devDependencies": {
-    "@types/jest": "^23.3.2",
-    "concurrently": "^4.0.1",
-    "dts-bundle": "^0.7.3",
+    "@types/jest": "^23.3.9",
     "jest": "^23.6.0",
-    "node-static": "^0.7.11",
-    "prettier": "^1.14.3",
+    "lerna": "^3.4.3",
+    "prettier": "^1.15.2",
     "rimraf": "^2.6.2",
-    "rollup": "^0.66.2",
-    "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-multi-entry": "^2.0.2",
-    "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-typescript2": "^0.17.0",
-    "ts-jest": "^23.10.2",
+    "ts-jest": "^23.10.4",
     "tslint": "^5.11.0",
-    "tslint-config-airbnb": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.1",
     "tslint-eslint-rules": "^5.4.0",
-    "tslint-language-service": "^0.9.9",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.6"
+  },
+  "scripts": {
+    "test": "jest --verbose",
+    "lint": "tslint --project tsconfig.json --config tslint.json -t stylish 'packages/**/*.ts'"
   }
 }

@@ -1,6 +1,6 @@
-import { Message, MessageType } from '../message';
-import { HandledMessage } from '../handledMessage';
-import { Controller, SendMessageFunction } from '../controller';
+import { Message, MessageType } from '../src/message';
+import { HandledMessage } from '../src/handledMessage';
+import { Controller, SendMessageFunction } from '../src/controller';
 import { testMessage } from './message.test';
 import Mock = jest.Mock;
 

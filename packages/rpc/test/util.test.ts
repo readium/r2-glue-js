@@ -3,7 +3,7 @@ import {
   isEventTarget,
   resolveEventTargetSelector,
   uuid,
-} from '../util';
+} from '../src/util';
 
 test('uuid generation', () => {
   expect(uuid()).not.toEqual(uuid());
