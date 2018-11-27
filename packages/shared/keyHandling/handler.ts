@@ -1,9 +1,9 @@
 import {
   CallbackFunction,
   MessageHandlingDeclarations,
-} from '@teadium/glue-rpc';
+} from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
-import { marshalEvent } from '@teadium/glue-rpc/lib/marshaling';
+import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
 import { EventHandler } from '../eventHandling/handler';
 
 interface IRegisteredKeyHandler {

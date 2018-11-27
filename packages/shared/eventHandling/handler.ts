@@ -2,11 +2,11 @@ import {
   MessageHandling,
   CallbackFunction,
   MessageHandlingDeclarations,
-} from '@teadium/glue-rpc';
+} from '@readium/glue-rpc';
 
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
-import { marshalEvent } from '@teadium/glue-rpc/lib/marshaling';
-import { resolveEventTargetSelector } from '@teadium/glue-rpc/lib/util';
+import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
+import { resolveEventTargetSelector } from '@readium/glue-rpc/lib/util';
 
 let lastUsedID = 0;
 

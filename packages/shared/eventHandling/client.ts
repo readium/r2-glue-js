@@ -1,4 +1,4 @@
-import { Caller } from '@teadium/glue-rpc/lib/caller';
+import { Caller } from '@readium/glue-rpc/lib/caller';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
 export class EventHandling extends Caller {

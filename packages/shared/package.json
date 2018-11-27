@@ -1,10 +1,10 @@
 {
-  "name": "@teadium/glue-shared",
+  "name": "@readium/glue-shared",
   "version": "1.0.0",
   "scripts": {
     "build": "tsc"
   },
   "dependencies": {
-    "@teadium/glue-rpc": "^1.0.0"
+    "@readium/glue-rpc": "^1.0.0"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@teadium/glue-rpc",
+  "name": "@readium/glue-rpc",
   "version": "1.0.0",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",

@@ -1,4 +1,4 @@
-import { Caller } from '@teadium/glue-rpc/lib/caller';
+import { Caller } from '@readium/glue-rpc/lib/caller';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
 export class KeyHandling extends Caller {
