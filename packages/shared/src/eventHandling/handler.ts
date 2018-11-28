@@ -1,8 +1,4 @@
-import {
-  MessageHandling,
-  CallbackFunction,
-  MessageHandlingDeclarations,
-} from '@readium/glue-rpc';
+import { MessageHandling, CallbackFunction, MessageHandlingDeclarations } from '@readium/glue-rpc';
 
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';

@@ -9,7 +9,7 @@ interface MessageCorrelation {
 }
 
 export abstract class Caller extends Controller {
-    private readonly _targetWindow: Window;
+  private readonly _targetWindow: Window;
   private readonly _namespace: string;
 
   private readonly _messageCorrelations: { [id: string]: MessageCorrelation };
