@@ -15,6 +15,8 @@
   },
   "scripts": {
     "test": "jest --verbose",
-    "lint": "tslint --project tsconfig.json --config tslint.json -t stylish 'packages/**/*.ts'"
+    "lint": "tslint --project tsconfig.json --config tslint.json -t stylish 'packages/**/*.ts'",
+    "build": "lerna run build",
+    "publish": "npm run build && lerna publish"
   }
 }
