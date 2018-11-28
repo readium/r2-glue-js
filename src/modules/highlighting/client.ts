@@ -19,4 +19,14 @@ export class Highlighting extends Client {
       [rangeData, options],
     );
   }
+
+  public async deleteHighlight(
+    rangeData: RangeData,
+  ): Promise<void> {
+
+    return this.sendMessage(
+      EventHandlingMessage.DeleteHighlight,
+      [rangeData],
+    );
+  }
 }

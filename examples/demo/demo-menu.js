@@ -203,9 +203,8 @@ class DemoMenu {
     async _addSelectionHandling() {
         this.selGlue.addEventListener('body', (opts) => {
             const rangeData = opts[0].rangeData;
-            this.highlighting.createHighlight(rangeData, (opts) => {
-                console.log(opts);
-            }, {test: 'test'});
+            console.log(rangeData);
+            this.highlighting.createHighlight(rangeData);
         });
     }
 

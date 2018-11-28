@@ -55,7 +55,7 @@ export function createRangeFromRangeData(rangeData: RangeData): Range {
   );
 }
 
-function createSelectorFromStringArray(array: string[]): string {
+export function createSelectorFromStringArray(array: string[]): string {
   let selector: string = '';
 
   let value = '';
@@ -63,6 +63,9 @@ function createSelectorFromStringArray(array: string[]): string {
     value = array[i];
     // Ignore custom selectors, such as @window and @document
     if (value.includes('@')) continue;
+    if (value.includes('>')) {
+      value = value.split('>')[1];
+    }
 
     if (selector.length !== 0) selector += ' ';
     selector += value;
