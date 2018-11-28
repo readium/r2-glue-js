@@ -16,7 +16,7 @@
   "scripts": {
     "test": "jest --verbose",
     "lint": "tslint --project tsconfig.json --config tslint.json -t stylish 'packages/**/*.ts'",
-    "build": "lerna run build",
+    "build": "tsc -b packages",
     "publish": "npm run build && lerna publish"
   }
 }

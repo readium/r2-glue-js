@@ -1,14 +1,11 @@
 {
   "name": "@readium/glue-rpc",
   "version": "1.0.0",
-  "module": "lib/index.js",
+  "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib"
   ],
-  "scripts": {
-    "build" : "tsc"
-  },
   "dependencies": {
     "@medv/finder": "^1.1.1"
   }
