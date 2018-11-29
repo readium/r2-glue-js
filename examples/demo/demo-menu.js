@@ -17,6 +17,7 @@ class DemoMenu {
             this.eventGlue = new window.ReadiumGlue.EventHandling(this.testFrame.contentWindow);
             this.selGlue = new window.ReadiumGlue.SelectionHandling(this.testFrame.contentWindow);
             this.highlighting = new window.ReadiumGlue.Highlighting(this.testFrame.contentWindow);
+            this.regiGlue = new window.ReadiumGlue.RegionHandling(this.testFrame.contentWindow);
         });
 
         this.testPicker.onchange = () => {
@@ -33,6 +34,7 @@ class DemoMenu {
             case 0: // Sample content
                 this._addPageNavigation();
                 this._addSelectionHandling();
+                // this._addRegionHandling();
                 break;
             case 1: // Form elements
                 this._addAlert('input:nth-child(6)', 'Reset was clicked!' );
@@ -205,6 +207,25 @@ class DemoMenu {
             const rangeData = opts[0].rangeData;
             console.log(rangeData);
             this.highlighting.createHighlight(rangeData);
+        });
+    }
+
+    async _addRegionHandling() {
+        let region = {
+            left: 0,
+            top: 0,
+            width: 500,
+            height: 500,
+            scope: 'viewport',
+        };
+        this.regiGlue.addEventListener('mouseenter', region, () => {
+            console.log('mouse in!');
+        }).then((id) => {
+            console.log(id);
+        });
+
+        this.regiGlue.addEventListener('mouseout', region, () => {
+            console.log('mouse out!');
         });
     }
 
