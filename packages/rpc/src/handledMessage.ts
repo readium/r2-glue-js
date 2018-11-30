@@ -1,12 +1,10 @@
 import { uuid } from './util';
 import { Message, MessageType } from './message';
 
-const PROTOCOL_NAME = 'r2-glue-js';
-const PROTOCOL_VERSION = '1.0.0';
+const PROTOCOL_NAME = 'readium-glue';
 
 export class HandledMessage implements Message {
   public readonly protocol: string;
-  public readonly version: string;
 
   public readonly correlationId: string;
 
@@ -32,7 +30,6 @@ export class HandledMessage implements Message {
     this.correlationId = correlationId || uuid();
 
     this.protocol = PROTOCOL_NAME;
-    this.version = PROTOCOL_VERSION;
   }
 
   public static validate(message: Message): boolean {

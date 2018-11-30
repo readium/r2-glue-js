@@ -6,7 +6,6 @@ export enum MessageType {
 
 export interface Message {
   readonly protocol?: string;
-  readonly version?: string;
 
   readonly correlationId?: string;
 
