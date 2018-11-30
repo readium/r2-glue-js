@@ -1,3 +1,3 @@
-export * from './executor';
+export * from './dispatcher';
 export * from './message';
-export * from './messageHandling';
+export * from './executor';

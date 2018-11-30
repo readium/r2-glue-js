@@ -1,4 +1,4 @@
-import { Executor } from '@readium/glue-rpc';
+import { Dispatcher } from '@readium/glue-rpc';
 import { EventHandler } from './handler';
 
-export default new Executor('event-handling', EventHandler);
+export default new Dispatcher('event-handling', EventHandler);

@@ -1,4 +1,4 @@
-import { CallbackFunction } from './messageHandling';
+import { CallbackFunction } from './executor';
 import { Controller } from './controller';
 import { HandledMessage } from './handledMessage';
 import { Message, MessageType } from './message';

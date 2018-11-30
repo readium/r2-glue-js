@@ -1,6 +1,6 @@
 import { Caller } from '../src/caller';
 import { Message, MessageType } from '../src/message';
-import { CallbackFunction } from '../src/messageHandling';
+import { CallbackFunction } from '../src/executor';
 import { HandledMessage } from '../src/handledMessage';
 
 const mockWindow = {
@@ -33,6 +33,7 @@ class TestCaller extends Caller {
   public sendSync(message: Message): void {
     super.sendMessage(message.key, testMessage.value);
   }
+
   public async sendAsync(message: Message, callback: CallbackFunction): Promise<string> {
     return super.sendMessage(message.key, message.value, callback);
   }

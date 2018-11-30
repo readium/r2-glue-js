@@ -1,4 +1,4 @@
-import { Executor } from '@readium/glue-rpc';
+import { Dispatcher } from '@readium/glue-rpc';
 import { KeyHandler } from './handler';
 
-export default new Executor('key-handling', KeyHandler);
+export default new Dispatcher('key-handling', KeyHandler);
