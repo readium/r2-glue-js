@@ -2,7 +2,7 @@ import { Message, MessageType } from './message';
 import { MessageHandling } from './messageHandling';
 import { SendMessageFunction, Controller } from './controller';
 
-export class Executor extends Controller {
+export class Dispatcher extends Controller {
   private readonly _messageHandlingInstance: MessageHandling;
 
   public constructor(namespace: string, messageHandlingType: { new (): MessageHandling }) {
