@@ -1,10 +1,6 @@
 module.exports = {
-  transform: {
-    '.(ts|tsx)': 'ts-jest',
-  },
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$',
-  moduleFileExtensions: ['ts', 'tsx', 'js'],
   coveragePathIgnorePatterns: ['/node_modules/', '/test/'],
   coverageThreshold: {
     global: {
@@ -15,4 +11,9 @@ module.exports = {
     },
   },
   collectCoverage: true,
+  globals: {
+    'ts-jest': {
+      tsConfig: 'packages/tsconfig.options.json'
+    }
+  }
 };
