@@ -1,7 +1,6 @@
-import { CallbackFunction } from '@readium/glue-rpc';
+import { CallbackFunction, MessageSource, Executor } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
-import { EventHandler } from '../eventHandling/handler';
 
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
@@ -20,22 +19,26 @@ const KEYBOARD_EVENT_PROPERTIES = [
   'isComposing',
 ];
 
-export class KeyHandler extends EventHandler {
-  // handlers: MessageHandlingDeclarations = {
-  //   [KeyHandlingMessage.AddKeyEventListener]: this._addKeyEventListener,
-  // };
+export class KeyHandler extends Executor {
+  private readonly registeredKeyHandlers: { [key: string]: IRegisteredKeyHandler[] } = {};
+  private readonly registeredAnyKeyHandlers: IRegisteredKeyHandler[] = [];
 
-  private registeredKeyHandlers: { [key: string]: IRegisteredKeyHandler[] } = {};
+  constructor(messageSource: MessageSource) {
+    super(messageSource);
 
-  constructor() {
-    super(null);
+    messageSource.addListener(KeyHandlingMessage.AddKeyEventListener, this._addKeyEventListener);
+
     const keyboardEventHandler = (event: KeyboardEvent) => {
       if (event.defaultPrevented) {
         // Skip if event is already handled
         return;
       }
 
-      const matchingKeyHandlerSet = this.registeredKeyHandlers[event.key] || [];
+      const matchingKeyHandlerSet = [
+        ...(this.registeredKeyHandlers[event.key] || []),
+        ...this.registeredAnyKeyHandlers,
+      ];
+
       matchingKeyHandlerSet.forEach((handlerInfo) => {
         if (handlerInfo.eventType !== event.type) {
           return;
@@ -43,6 +46,10 @@ export class KeyHandler extends EventHandler {
 
         if (handlerInfo.options.preventDefault) {
           event.preventDefault();
+        }
+
+        if (handlerInfo.options.once) {
+          matchingKeyHandlerSet.splice(matchingKeyHandlerSet.indexOf(handlerInfo), 1);
         }
 
         handlerInfo.callback(marshalEvent(event, KEYBOARD_EVENT_PROPERTIES));
@@ -58,11 +65,16 @@ export class KeyHandler extends EventHandler {
     target: string,
     eventType: KeyEventType,
     keyCode?: string,
-    options?: IAddKeyListenerOptions,
+    options: IAddKeyListenerOptions = {},
   ): Promise<void> {
-    // if (!this.registeredKeyHandlers[keyCode]) {
-    //   this.registeredKeyHandlers[keyCode] = [];
-    // }
-    // this.registeredKeyHandlers[keyCode].push({ eventType, callback, options });
+    const handlerInfo = { eventType, callback, options };
+    if (keyCode) {
+      if (!this.registeredKeyHandlers[keyCode]) {
+        this.registeredKeyHandlers[keyCode] = [];
+      }
+      this.registeredKeyHandlers[keyCode].push(handlerInfo);
+    } else {
+      this.registeredAnyKeyHandlers.push(handlerInfo);
+    }
   }
 }

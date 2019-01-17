@@ -1,3 +1,4 @@
+export type CallbackFunction = (...params: any[]) => void;
 
 export type MessageHandler = (callback: CallbackFunction, ...params: any[]) => Promise<any>;
 
@@ -7,9 +8,9 @@ export interface MessageSource {
 }
 
 export interface ExecutorConstructor {
-  new (messageSource: MessageSource) : Executor;
+  new (messageSource: MessageSource): Executor;
 }
 
 export abstract class Executor {
-  protected constructor(messageSource: MessageSource) { }
+  constructor(messageSource: MessageSource) {}
 }

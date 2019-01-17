@@ -8,8 +8,10 @@ interface MessageEventWithData extends MessageEvent {
 export type SendMessageFunction = (type: MessageType, name: string, parameters: any[]) => void;
 
 export abstract class Controller {
+  private readonly _onMessage: (event: MessageEventWithData) => void;
+
   protected constructor(namespace: string) {
-    window.addEventListener('message', (event: MessageEventWithData) => {
+    this._onMessage = (event) => {
       const request = event.data;
 
       if (!HandledMessage.validate(request) || request.namespace !== namespace) {
@@ -28,8 +30,13 @@ export abstract class Controller {
           event.origin,
         );
       });
-    });
+    };
+    window.addEventListener('message', this._onMessage);
   }
 
   protected abstract processMessage(message: Message, sendMessage: SendMessageFunction): void;
+
+  protected destroy(): void {
+    window.removeEventListener('message', this._onMessage);
+  }
 }
