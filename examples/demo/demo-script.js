@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     frame.src = prefix + url;
     frame.onload = function() {
       var script = frame.contentDocument.createElement("script");
-      script.setAttribute("src", "/dist/ReadiumGlue-payload.js");
+      script.setAttribute("src", "/dist/glue-embed.js");
       frame.contentDocument.head.appendChild(script);
     }
   }
