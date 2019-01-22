@@ -29,6 +29,10 @@ export class Dispatcher extends Controller {
   }
 
   protected processMessage(message: Message, sendMessage: SendMessageFunction): void {
+    if (message.type !== MessageType.Request) {
+      return;
+    }
+
     const messageHandlers = this._registeredMessageHandlers[message.key] || [];
     messageHandlers.forEach((messageHandler) => {
       messageHandler
