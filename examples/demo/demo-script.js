@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
       var script = frame.contentDocument.createElement("script");
       script.setAttribute("src", "/dist/glue-embed.js");
       frame.contentDocument.head.appendChild(script);
+      var script = frame.contentDocument.createElement("script");
+      script.setAttribute("src", "/dist/glue-caller.js");
+      frame.contentDocument.head.appendChild(script);
     }
   }
 
