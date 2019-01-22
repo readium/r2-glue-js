@@ -11,7 +11,11 @@
     "tslint": "^5.12.1",
     "tslint-config-airbnb": "^5.11.1",
     "tslint-eslint-rules": "^5.4.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "rollup": "^1.0.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "node-static": "0.7.11"
   },
   "scripts": {
     "test": "jest --verbose",
@@ -19,6 +23,8 @@
     "format": "prettier --config .prettierrc --ignore-path .gitignore --write 'packages/**/*.ts'",
     "build": "tsc -b packages",
     "build:rpc": "tsc -b packages/rpc",
-    "publish": "npm run build && lerna publish"
+    "dist": "rollup -c",
+    "publish": "npm run build && lerna publish",
+    "serve": "static -a 0.0.0.0 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' ."
   }
 }
