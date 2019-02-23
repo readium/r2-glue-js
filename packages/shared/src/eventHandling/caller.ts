@@ -1,7 +1,7 @@
-import { Caller } from '@readium/glue-rpc/lib/caller';
+import { GlueCaller } from '@readium/glue-rpc';
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
-export class EventHandling extends Caller {
+export class EventHandling extends GlueCaller {
   public constructor(targetWindow: Window) {
     super('event-handling', targetWindow);
   }
@@ -13,7 +13,7 @@ export class EventHandling extends Caller {
     listener: EventListener,
     options: IAddEventListenerOptions = {},
   ): Promise<number> {
-    return this.sendMessage(
+    return this.call(
       EventHandlingMessage.AddEventListener,
       [target, eventType, properties, options],
       (event) => {
@@ -23,6 +23,6 @@ export class EventHandling extends Caller {
   }
 
   public removeEventListener(listenerID: number): void {
-    this.sendMessage(EventHandlingMessage.RemoveEventListener, [listenerID]);
+    this.call(EventHandlingMessage.RemoveEventListener, [listenerID]);
   }
 }

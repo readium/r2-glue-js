@@ -1,6 +1,6 @@
-import { CallbackFunction } from './executor';
+import { CallbackFunction } from './service';
 import { Controller } from './controller';
-import { HandledMessage } from './handledMessage';
+import { MessageInstance } from './messageInstance';
 import { Message, MessageType } from './message';
 
 interface MessageCorrelation {
@@ -8,7 +8,7 @@ interface MessageCorrelation {
   callback?: CallbackFunction;
 }
 
-export abstract class Caller extends Controller {
+export abstract class GlueCaller extends Controller {
   private readonly _targetWindow: Window;
   private readonly _namespace: string;
 
@@ -21,12 +21,12 @@ export abstract class Caller extends Controller {
     this._messageCorrelations = {};
   }
 
-  protected sendMessage(
-    key: string,
+  protected call(
+    name: string,
     parameters: any[],
     callback?: CallbackFunction,
   ): Promise<any> | void {
-    const message = new HandledMessage(this._namespace, MessageType.Request, key, parameters);
+    const message = new MessageInstance(this._namespace, MessageType.Request, name, parameters);
     const correlations = this._getCorrelations(message.correlationId);
     if (callback) {
       correlations.callback = callback;

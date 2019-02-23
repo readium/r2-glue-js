@@ -1,4 +1,4 @@
-import { Dispatcher } from '@readium/glue-rpc';
+import { GlueHost } from '@readium/glue-rpc';
 import { EventHandler } from './handler';
 
-export default new Dispatcher('event-handling', EventHandler);
+export default new GlueHost('event-handling', EventHandler);

@@ -1,7 +1,7 @@
 import { MessageType } from '../src/message';
-import { HandledMessage } from '../src/handledMessage';
+import { MessageInstance } from '../src/messageInstance';
 
-export const testMessage = new HandledMessage('namespace', MessageType.Request, 'test', [
+export const testMessage = new MessageInstance('namespace', MessageType.Request, 'test', [
   0,
   1,
   2,
@@ -9,7 +9,7 @@ export const testMessage = new HandledMessage('namespace', MessageType.Request, 
 ]);
 
 test('message has unique correlation identifier', () => {
-  const duplicatedMessage = new HandledMessage(
+  const duplicatedMessage = new MessageInstance(
     testMessage.namespace,
     testMessage.type,
     testMessage.key,
@@ -20,7 +20,7 @@ test('message has unique correlation identifier', () => {
 });
 
 test('message uses provided correlation identifier', () => {
-  const messageWithCorrelationId = new HandledMessage(
+  const messageWithCorrelationId = new MessageInstance(
     testMessage.namespace,
     testMessage.type,
     testMessage.key,
@@ -34,6 +34,6 @@ test('message uses provided correlation identifier', () => {
 test('validates message', () => {
   const invalidMessage = { fruit: 'banana' };
   // @ts-ignore
-  expect(HandledMessage.validate(invalidMessage)).toBe(false);
-  expect(HandledMessage.validate(testMessage)).toBe(true);
+  expect(MessageInstance.validate(invalidMessage)).toBe(false);
+  expect(MessageInstance.validate(testMessage)).toBe(true);
 });

@@ -1,4 +1,4 @@
-import { CallbackFunction, MessageSource, Executor } from '@readium/glue-rpc';
+import { CallbackFunction, CallSource, GlueService } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
 
@@ -19,14 +19,14 @@ const KEYBOARD_EVENT_PROPERTIES = [
   'isComposing',
 ];
 
-export class KeyHandler extends Executor {
+export class KeyHandler extends GlueService {
   private readonly registeredKeyHandlers: { [key: string]: IRegisteredKeyHandler[] } = {};
   private readonly registeredAnyKeyHandlers: IRegisteredKeyHandler[] = [];
 
-  constructor(messageSource: MessageSource) {
+  constructor(messageSource: CallSource) {
     super(messageSource);
 
-    messageSource.addListener(KeyHandlingMessage.AddKeyEventListener, this._addKeyEventListener);
+    messageSource.bind(KeyHandlingMessage.AddKeyEventListener, this._addKeyEventListener);
 
     const keyboardEventHandler = (event: KeyboardEvent) => {
       if (event.defaultPrevented) {

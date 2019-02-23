@@ -1,8 +1,8 @@
 import { Message, MessageType } from './message';
-import { HandledMessage } from './handledMessage';
+import { MessageInstance } from './messageInstance';
 
 interface MessageEventWithData extends MessageEvent {
-  readonly data: HandledMessage;
+  readonly data: MessageInstance;
 }
 
 export type SendMessageFunction = (type: MessageType, name: string, parameters: any[]) => void;
@@ -14,7 +14,7 @@ export abstract class Controller {
     this._onMessage = (event) => {
       const request = event.data;
 
-      if (!HandledMessage.validate(request) || request.namespace !== namespace) {
+      if (!MessageInstance.validate(request) || request.namespace !== namespace) {
         return;
       }
 
@@ -26,7 +26,7 @@ export abstract class Controller {
         const sourceWindow = <Window>event.source;
 
         sourceWindow.postMessage(
-          new HandledMessage(namespace, type, name, parameters, request.correlationId),
+          new MessageInstance(namespace, type, name, parameters, request.correlationId),
           event.origin,
         );
       });

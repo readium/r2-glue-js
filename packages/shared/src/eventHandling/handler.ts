@@ -1,4 +1,4 @@
-import { Executor, CallbackFunction, MessageSource } from '@readium/glue-rpc';
+import { GlueService, CallbackFunction, CallSource } from '@readium/glue-rpc';
 
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
@@ -6,11 +6,11 @@ import { resolveEventTargetSelector } from '@readium/glue-rpc/lib/util';
 
 let lastUsedID = 0;
 
-export class EventHandler extends Executor {
-  constructor(messageSource: MessageSource) {
-    super(messageSource);
-    messageSource.addListener(EventHandlingMessage.AddEventListener, this._addEventListener);
-    messageSource.addListener(EventHandlingMessage.RemoveEventListener, this._removeEventListener);
+export class EventHandler extends GlueService {
+  constructor(source: CallSource) {
+    super(source);
+    source.bind(EventHandlingMessage.AddEventListener, this._addEventListener);
+    source.bind(EventHandlingMessage.RemoveEventListener, this._removeEventListener);
   }
 
   private registeredEventListenerRemovers: { [id: number]: Function[] } = {};

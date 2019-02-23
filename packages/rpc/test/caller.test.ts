@@ -1,7 +1,7 @@
-import { Caller } from '../src/caller';
+import { GlueCaller } from '../src/caller';
 import { Message, MessageType } from '../src/message';
-import { CallbackFunction } from '../src/executor';
-import { HandledMessage } from '../src/handledMessage';
+import { CallbackFunction } from '../src/service';
+import { MessageInstance } from '../src/messageInstance';
 
 const mockWindow = {
   postMessage: jest.fn(),
@@ -25,17 +25,17 @@ const expectedCallbackResponse: Message = {
   value: 'world',
 };
 
-class TestCaller extends Caller {
+class TestCaller extends GlueCaller {
   constructor(targetWindow: any) {
     super(testNamespace, targetWindow);
   }
 
-  public sendSync(message: Message): void {
-    super.sendMessage(message.key, testMessage.value);
+  public callSync(message: Message): void {
+    super.call(message.key, testMessage.value);
   }
 
-  public async sendAsync(message: Message, callback: CallbackFunction): Promise<string> {
-    return super.sendMessage(message.key, message.value, callback);
+  public async callAsync(message: Message, callback: CallbackFunction): Promise<string> {
+    return super.call(message.key, message.value, callback);
   }
 
   public processMessage(message: Message): void {
@@ -46,8 +46,8 @@ class TestCaller extends Caller {
 const testCaller = new TestCaller(mockWindow);
 
 test('posts messages to target window', () => {
-  testCaller.sendSync(testMessage);
-  const expectedPostedMessage = new HandledMessage(
+  testCaller.callSync(testMessage);
+  const expectedPostedMessage = new MessageInstance(
     testNamespace,
     MessageType.Request,
     testMessage.key,
@@ -61,7 +61,7 @@ test('posts messages to target window', () => {
 
 test('handles messages from target window', async () => {
   const callback = jest.fn();
-  const sendPromise = testCaller.sendAsync(testMessage, callback);
+  const sendPromise = testCaller.callAsync(testMessage, callback);
 
   // simulate the target responding
   const postMessageMock = mockWindow.postMessage.mock;

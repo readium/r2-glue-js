@@ -1,7 +1,7 @@
-import { Caller } from '@readium/glue-rpc/lib/caller';
+import { GlueCaller } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
-export class KeyHandling extends Caller {
+export class KeyHandling extends GlueCaller {
   public constructor(targetWindow: Window) {
     super('key-handling', targetWindow);
   }
@@ -13,7 +13,7 @@ export class KeyHandling extends Caller {
     listener: EventListener,
     options: IAddKeyListenerOptions = {},
   ): void {
-    this.sendMessage(
+    this.call(
       KeyHandlingMessage.AddKeyEventListener,
       [target, eventType, keyCode, options],
       (event) => {

@@ -1,5 +1,5 @@
 import { Message, MessageType } from '../src/message';
-import { HandledMessage } from '../src/handledMessage';
+import { MessageInstance } from '../src/messageInstance';
 import { Controller, SendMessageFunction } from '../src/controller';
 import { testMessage } from './message.test';
 import Mock = jest.Mock;
@@ -58,7 +58,7 @@ describe('processing and responding to messages', () => {
 
     sendMessageCallback(postedMessage.type, postedMessage.key, postedMessage.value);
 
-    expect(postMessageCall).toBeCalledWith(expect.any(HandledMessage), 'example.com');
+    expect(postMessageCall).toBeCalledWith(expect.any(MessageInstance), 'example.com');
 
     const actualPostedMessage: Message = postMessageCall.mock.calls[0][0];
     expect(actualPostedMessage).toMatchObject(postedMessage);

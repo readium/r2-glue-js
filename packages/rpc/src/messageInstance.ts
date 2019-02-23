@@ -3,7 +3,7 @@ import { Message, MessageType } from './message';
 
 const PROTOCOL_NAME = 'readium-glue';
 
-export class HandledMessage implements Message {
+export class MessageInstance implements Message {
   public readonly protocol: string;
 
   public readonly correlationId: string;
