@@ -1,32 +1,20 @@
-import { MessageType } from '../src/message';
-import { MessageInstance } from '../src/messageInstance';
+import { Message, MessageType } from '../src/message';
 
-export const testMessage = new MessageInstance('namespace', MessageType.Request, 'test', [
-  0,
-  1,
-  2,
-  3,
-]);
+export const testMessage = new Message({
+  type: MessageType.Request,
+  namespace: 'namespace',
+  name: 'test',
+  payload: [0, 1, 2, 3],
+});
 
 test('message has unique correlation identifier', () => {
-  const duplicatedMessage = new MessageInstance(
-    testMessage.namespace,
-    testMessage.type,
-    testMessage.key,
-    testMessage.value,
-  );
+  const duplicatedMessage = new Message({ ...testMessage, correlationId: undefined });
 
   expect(testMessage.correlationId).not.toBe(duplicatedMessage.correlationId);
 });
 
 test('message uses provided correlation identifier', () => {
-  const messageWithCorrelationId = new MessageInstance(
-    testMessage.namespace,
-    testMessage.type,
-    testMessage.key,
-    testMessage.value,
-    'foobar',
-  );
+  const messageWithCorrelationId = new Message({ ...testMessage, correlationId: 'foobar' });
 
   expect(messageWithCorrelationId.correlationId).toBe('foobar');
 });
@@ -34,6 +22,6 @@ test('message uses provided correlation identifier', () => {
 test('validates message', () => {
   const invalidMessage = { fruit: 'banana' };
   // @ts-ignore
-  expect(MessageInstance.validate(invalidMessage)).toBe(false);
-  expect(MessageInstance.validate(testMessage)).toBe(true);
+  expect(Message.validate(invalidMessage)).toBe(false);
+  expect(Message.validate(testMessage)).toBe(true);
 });

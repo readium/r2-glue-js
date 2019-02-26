@@ -1,17 +1,43 @@
+import { uuid } from './util';
+
 export enum MessageType {
   Request = 'request',
   Respond = 'respond',
   Callback = 'callback',
 }
 
-export interface Message {
-  readonly protocol?: string;
+const PROTOCOL_NAME = 'readium-glue';
 
-  readonly correlationId?: string;
+type NewMessage = Partial<Message> & {
+  type: MessageType;
+  namespace: string,
+  name: string;
+  payload: any;
+};
 
-  readonly namespace?: string;
-  readonly type?: MessageType;
+export class Message {
+  public readonly protocol: string;
 
-  readonly key: string;
-  readonly value: any;
+  public readonly correlationId: string;
+  public readonly type: MessageType;
+
+  public readonly namespace: string;
+  public readonly name: string;
+  public readonly payload: any;
+
+  constructor(newMessage: NewMessage) {
+    this.type = newMessage.type;
+
+    this.namespace = newMessage.namespace;
+    this.name = newMessage.name;
+    this.payload = newMessage.payload;
+
+    this.correlationId = newMessage.correlationId || uuid();
+
+    this.protocol = PROTOCOL_NAME;
+  }
+
+  public static validate(message: Message): boolean {
+    return !!message.protocol && message.protocol === PROTOCOL_NAME;
+  }
 }

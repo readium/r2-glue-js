@@ -1,9 +1,14 @@
 import { uuid } from './util';
-import { Message, MessageType } from './message';
+
+export enum MessageType {
+  Request = 'request',
+  Respond = 'respond',
+  Callback = 'callback',
+}
 
 const PROTOCOL_NAME = 'readium-glue';
 
-export class MessageInstance implements Message {
+export class Message {
   public readonly protocol: string;
 
   public readonly correlationId: string;

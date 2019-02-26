@@ -1,5 +1,5 @@
 import { Message, MessageType } from './message';
-import { GlueServiceConstructor, GlueService, CallHandler } from './service';
+import { GlueServiceConstructor, GlueService, CallHandler, CallHandlerList } from './service';
 import { SendMessageFunction, Controller } from './controller';
 
 export class GlueHost extends Controller {
@@ -10,13 +10,28 @@ export class GlueHost extends Controller {
   public constructor(namespace: string, service: GlueServiceConstructor) {
     super(namespace);
 
+    const _bind = (name: string, handler: CallHandler) => {
+      if (!this._registeredCallHandlers[name]) {
+        this._registeredCallHandlers[name] = [];
+      }
+      this._registeredCallHandlers[name].push(handler);
+    };
+
+    function bind(handlers: CallHandlerList): void;
+    function bind(name: string, handler: CallHandler): void;
+    function bind(handlersOrName: string | CallHandlerList, handler?: CallHandler): void {
+      if (typeof handlersOrName === 'string' && handler) {
+        _bind(handlersOrName, handler);
+      } else {
+        const handlers = handlersOrName as CallHandlerList;
+        Object.keys(handlers).forEach((name) => {
+          _bind(name, handlers[name]);
+        });
+      }
+    }
+
     this._callHandlingService = new service({
-      bind: (name, handler) => {
-        if (!this._registeredCallHandlers[name]) {
-          this._registeredCallHandlers[name] = [];
-        }
-        this._registeredCallHandlers[name].push(handler);
-      },
+      bind,
       unbind: (name, handler) => {
         const messageHandlers = this._registeredCallHandlers[name];
         messageHandlers.splice(messageHandlers.indexOf(handler), 1);
@@ -33,17 +48,17 @@ export class GlueHost extends Controller {
       return;
     }
 
-    const messageHandlers = this._registeredCallHandlers[message.key] || [];
+    const messageHandlers = this._registeredCallHandlers[message.name] || [];
     messageHandlers.forEach((messageHandler) => {
       messageHandler
         .apply(this._callHandlingService, [
           (...callbackData: any[]) => {
-            sendMessage(MessageType.Callback, message.key, callbackData);
+            sendMessage(MessageType.Callback, message.name, callbackData);
           },
-          ...message.value,
+          ...message.payload,
         ])
         .then((responseValue: any) => {
-          sendMessage(MessageType.Respond, message.key, responseValue);
+          sendMessage(MessageType.Respond, message.name, responseValue);
         });
     });
   }

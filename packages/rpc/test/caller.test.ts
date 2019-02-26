@@ -1,7 +1,12 @@
 import { GlueCaller } from '../src/caller';
 import { Message, MessageType } from '../src/message';
 import { CallbackFunction } from '../src/service';
-import { MessageInstance } from '../src/messageInstance';
+
+type PartialMessage = Partial<Message> & {
+  type: MessageType;
+  name: string;
+  payload: any;
+};
 
 const mockWindow = {
   postMessage: jest.fn(),
@@ -9,20 +14,22 @@ const mockWindow = {
 };
 
 const testNamespace = 'test-client';
-const testMessage: Message = {
-  key: 'ping',
-  value: 'hello',
+const testMessage: PartialMessage = {
+  type: MessageType.Request,
+  name: 'ping',
+  payload: 'hello',
 };
 
-const expectedResponse: Message = {
+const expectedResponse: PartialMessage = {
   ...testMessage,
   type: MessageType.Respond,
-  value: 'pong',
+  payload: 'pong',
 };
-const expectedCallbackResponse: Message = {
+
+const expectedCallbackResponse: PartialMessage = {
   ...testMessage,
   type: MessageType.Callback,
-  value: 'world',
+  payload: 'world',
 };
 
 class TestCaller extends GlueCaller {
@@ -30,12 +37,12 @@ class TestCaller extends GlueCaller {
     super(testNamespace, targetWindow);
   }
 
-  public callSync(message: Message): void {
-    super.call(message.key, testMessage.value);
+  public callSync(name: string, params: any): void {
+    super.call(name, params);
   }
 
-  public async callAsync(message: Message, callback: CallbackFunction): Promise<string> {
-    return super.call(message.key, message.value, callback);
+  public async callAsync(name: string, params: any, callback: CallbackFunction): Promise<string> {
+    return super.call(name, params, callback);
   }
 
   public processMessage(message: Message): void {
@@ -46,13 +53,11 @@ class TestCaller extends GlueCaller {
 const testCaller = new TestCaller(mockWindow);
 
 test('posts messages to target window', () => {
-  testCaller.callSync(testMessage);
-  const expectedPostedMessage = new MessageInstance(
-    testNamespace,
-    MessageType.Request,
-    testMessage.key,
-    testMessage.value,
-  );
+  testCaller.callSync(testMessage.name, testMessage.payload);
+  const expectedPostedMessage = new Message({
+    ...testMessage,
+    namespace: testNamespace,
+  });
   expect(mockWindow.postMessage).toHaveBeenCalledWith(
     expect.objectContaining({ ...expectedPostedMessage, correlationId: expect.anything() }),
     mockWindow.location.origin,
@@ -61,7 +66,7 @@ test('posts messages to target window', () => {
 
 test('handles messages from target window', async () => {
   const callback = jest.fn();
-  const sendPromise = testCaller.callAsync(testMessage, callback);
+  const sendPromise = testCaller.callAsync(testMessage.name, testMessage.payload, callback);
 
   // simulate the target responding
   const postMessageMock = mockWindow.postMessage.mock;
@@ -71,6 +76,6 @@ test('handles messages from target window', async () => {
   const callbackResponse = { ...postedMessage, ...expectedCallbackResponse };
   testCaller.processMessage(callbackResponse);
 
-  expect(await sendPromise).toBe(expectedResponse.value);
-  expect(callback).toHaveBeenCalledWith(expectedCallbackResponse.value);
+  expect(await sendPromise).toBe(expectedResponse.payload);
+  expect(callback).toHaveBeenCalledWith(expectedCallbackResponse.payload);
 });

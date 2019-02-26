@@ -21,10 +21,10 @@
     "test": "jest --verbose",
     "lint": "tslint --project packages/tsconfig.lint.json --config tslint.json -t stylish",
     "format": "prettier --config .prettierrc --ignore-path .gitignore --write 'packages/**/*.ts'",
+    "clean": "rimraf packages/*/lib",
     "build": "tsc -b packages",
-    "build:rpc": "tsc -b packages/rpc",
-    "dist": "rollup -c",
-    "publish": "npm run build && lerna publish",
+    "dist": "npm run clean && rollup -c",
+    "publish": "npm run dist && lerna publish",
     "serve": "static -a 0.0.0.0 -H '{\"Cache-Control\": \"no-cache, must-revalidate\"}' ."
   }
 }

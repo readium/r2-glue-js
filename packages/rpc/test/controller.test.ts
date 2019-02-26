@@ -1,5 +1,4 @@
 import { Message, MessageType } from '../src/message';
-import { MessageInstance } from '../src/messageInstance';
 import { Controller, SendMessageFunction } from '../src/controller';
 import { testMessage } from './message.test';
 import Mock = jest.Mock;
@@ -51,14 +50,14 @@ describe('processing and responding to messages', () => {
       .calls[0][1];
     const postedMessage = {
       type: MessageType.Respond,
-      key: 'retest',
-      value: ['a', 'b', 'c'],
+      name: 'retest',
+      payload: ['a', 'b', 'c'],
       correlationId: testMessage.correlationId,
     };
 
-    sendMessageCallback(postedMessage.type, postedMessage.key, postedMessage.value);
+    sendMessageCallback(postedMessage.type, postedMessage.name, postedMessage.payload);
 
-    expect(postMessageCall).toBeCalledWith(expect.any(MessageInstance), 'example.com');
+    expect(postMessageCall).toBeCalledWith(expect.any(Message), 'example.com');
 
     const actualPostedMessage: Message = postMessageCall.mock.calls[0][0];
     expect(actualPostedMessage).toMatchObject(postedMessage);
