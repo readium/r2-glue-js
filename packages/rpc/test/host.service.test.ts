@@ -1,5 +1,5 @@
 import { GlueHost } from '../src/host';
-import { GlueService, CallSource, CallbackFunction } from '../src/service';
+import { GlueService, CallSource, GlueCallback } from '../src/service';
 import { MessageType, Message } from '../src/message';
 import { SendMessageFunction } from '../src/controller';
 
@@ -12,7 +12,7 @@ class TestService extends GlueService {
     source.bind('SEND_ECHO', this._handleEcho);
   }
 
-  private async _handleEcho(cb: CallbackFunction, str: string): Promise<string> {
+  private async _handleEcho(cb: GlueCallback, str: string): Promise<string> {
     // TODO: Mock this
     return str;
   }

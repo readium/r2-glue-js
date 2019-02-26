@@ -1,10 +1,10 @@
-import { CallbackFunction } from './service';
+import { GlueCallback } from './service';
 import { Controller } from './controller';
 import { Message, MessageType } from './message';
 
 interface MessageCorrelation {
-  response?: CallbackFunction;
-  callback?: CallbackFunction;
+  response?: GlueCallback;
+  callback?: GlueCallback;
 }
 
 export abstract class GlueCaller extends Controller {
@@ -23,7 +23,7 @@ export abstract class GlueCaller extends Controller {
   protected call(
     name: string,
     parameters: any[],
-    callback?: CallbackFunction,
+    callback?: GlueCallback,
   ): Promise<any> | void {
     const message = new Message({
       name,

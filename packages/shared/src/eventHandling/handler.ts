@@ -1,4 +1,4 @@
-import { GlueService, CallbackFunction, CallSource } from '@readium/glue-rpc';
+import { GlueService, GlueCallback, CallSource } from '@readium/glue-rpc';
 
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
@@ -16,7 +16,7 @@ export class EventHandler extends GlueService {
   private registeredEventListenerRemovers: { [id: number]: Function[] } = {};
 
   private async _addEventListener(
-    callback: CallbackFunction,
+    callback: GlueCallback,
     target: string,
     type: string,
     properties: string[],
@@ -49,7 +49,7 @@ export class EventHandler extends GlueService {
     return lastUsedID;
   }
 
-  private async _removeEventListener({  }: CallbackFunction, listenerID: number): Promise<void> {
+  private async _removeEventListener({  }: GlueCallback, listenerID: number): Promise<void> {
     (this.registeredEventListenerRemovers[listenerID] || []).forEach((remove) => remove());
   }
 }

@@ -1,10 +1,10 @@
-import { CallbackFunction, CallSource, GlueService } from '@readium/glue-rpc';
+import { GlueCallback, CallSource, GlueService } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
 
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
-  callback: CallbackFunction;
+  callback: GlueCallback;
   options: IAddKeyListenerOptions;
 }
 
@@ -61,7 +61,7 @@ export class KeyHandler extends GlueService {
   }
 
   private async _addKeyEventListener(
-    callback: CallbackFunction,
+    callback: GlueCallback,
     target: string,
     eventType: KeyEventType,
     keyCode?: string,

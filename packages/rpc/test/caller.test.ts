@@ -1,6 +1,6 @@
 import { GlueCaller } from '../src/caller';
+import { GlueCallback } from '../src/service';
 import { Message, MessageType } from '../src/message';
-import { CallbackFunction } from '../src/service';
 
 type PartialMessage = Partial<Message> & {
   type: MessageType;
@@ -41,7 +41,7 @@ class TestCaller extends GlueCaller {
     super.call(name, params);
   }
 
-  public async callAsync(name: string, params: any, callback: CallbackFunction): Promise<string> {
+  public async callAsync(name: string, params: any, callback: GlueCallback): Promise<string> {
     return super.call(name, params, callback);
   }
 

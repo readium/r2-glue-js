@@ -1,6 +1,6 @@
-export type CallbackFunction = (...params: any[]) => void;
+export type GlueCallback = (...params: any[]) => void;
 
-export type CallHandler = (callback: CallbackFunction, ...params: any[]) => Promise<any>;
+export type CallHandler = (callback: GlueCallback, ...params: any[]) => Promise<any>;
 
 export type CallHandlerList = { [name: string] : CallHandler };
 
