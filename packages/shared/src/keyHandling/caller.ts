@@ -1,7 +1,7 @@
-import { GlueCaller } from '@readium/glue-rpc';
+import { Caller } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
-export class KeyHandling extends GlueCaller {
+export class KeyHandling extends Caller {
   public constructor(targetWindow: Window) {
     super('key-handling', targetWindow);
   }

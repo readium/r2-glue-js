@@ -13,7 +13,7 @@ export abstract class Controller {
     this._onMessage = (event) => {
       const request = event.data;
 
-      if (!Message.validate(request) || request.namespace !== namespace) {
+      if (request.namespace !== namespace) {
         return;
       }
 

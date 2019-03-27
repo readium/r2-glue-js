@@ -1,4 +1,4 @@
-import { GlueHost } from '@readium/glue-rpc';
+import { Host } from '@readium/glue-rpc';
 import { KeyHandler } from './handler';
 
-export default new GlueHost('key-handling', KeyHandler);
+export default new Host('key-handling', KeyHandler);

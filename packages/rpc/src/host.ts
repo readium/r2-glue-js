@@ -1,13 +1,13 @@
 import { Message, MessageType } from './message';
-import { GlueServiceConstructor, GlueService, CallHandler, CallHandlerList } from './service';
+import { ServiceConstructor, Service, CallHandler, CallHandlerList } from './service';
 import { SendMessageFunction, Controller } from './controller';
 
-export class GlueHost extends Controller {
-  private readonly _callHandlingService: GlueService;
+export class Host extends Controller {
+  private readonly _callHandlingService: Service;
 
   private readonly _registeredCallHandlers: { [key: string]: CallHandler[] } = {};
 
-  public constructor(namespace: string, service: GlueServiceConstructor) {
+  public constructor(namespace: string, service: ServiceConstructor) {
     super(namespace);
 
     const _bind = (name: string, handler: CallHandler) => {

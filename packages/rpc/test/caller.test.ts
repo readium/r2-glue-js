@@ -1,5 +1,5 @@
-import { GlueCaller } from '../src/caller';
-import { GlueCallback } from '../src/service';
+import { Caller } from '../src/caller';
+import { Callback } from '../src/service';
 import { Message, MessageType } from '../src/message';
 
 type PartialMessage = Partial<Message> & {
@@ -32,7 +32,7 @@ const expectedCallbackResponse: PartialMessage = {
   payload: 'world',
 };
 
-class TestCaller extends GlueCaller {
+class TestCaller extends Caller {
   constructor(targetWindow: any) {
     super(testNamespace, targetWindow);
   }
@@ -41,7 +41,7 @@ class TestCaller extends GlueCaller {
     super.call(name, params);
   }
 
-  public async callAsync(name: string, params: any, callback: GlueCallback): Promise<string> {
+  public async callAsync(name: string, params: any, callback: Callback): Promise<string> {
     return super.call(name, params, callback);
   }
 
