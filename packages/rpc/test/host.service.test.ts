@@ -1,18 +1,18 @@
-import { GlueHost } from '../src/host';
-import { GlueService, CallSource, GlueCallback } from '../src/service';
+import { Host } from '../src/host';
+import { Service, CallSource, Callback } from '../src/service';
 import { MessageType, Message } from '../src/message';
 import { SendMessageFunction } from '../src/controller';
 
 window.addEventListener = jest.fn();
 
-class TestService extends GlueService {
+class TestService extends Service {
   constructor(source: CallSource) {
     super(source);
     // TODO: Use a mock here as the handler
     source.bind('SEND_ECHO', this._handleEcho);
   }
 
-  private async _handleEcho(cb: GlueCallback, str: string): Promise<string> {
+  private async _handleEcho(cb: Callback, str: string): Promise<string> {
     // TODO: Mock this
     return str;
   }
@@ -32,7 +32,7 @@ const messageResponse = new Message({
   payload: 'sendchuckberry',
 });
 
-class TestHost extends GlueHost {
+class TestHost extends Host {
   public processMessage(message: Message, sendMessage: SendMessageFunction): void {
     // TODO: Mock this
     super.processMessage(message, sendMessage);

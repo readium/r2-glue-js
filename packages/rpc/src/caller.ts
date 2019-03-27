@@ -1,13 +1,13 @@
-import { GlueCallback } from './service';
+import { Callback } from './service';
 import { Controller } from './controller';
 import { Message, MessageType } from './message';
 
 interface MessageCorrelation {
-  response?: GlueCallback;
-  callback?: GlueCallback;
+  response?: Callback;
+  callback?: Callback;
 }
 
-export abstract class GlueCaller extends Controller {
+export abstract class Caller extends Controller {
   private readonly _targetWindow: Window;
   private readonly _namespace: string;
 
@@ -20,10 +20,14 @@ export abstract class GlueCaller extends Controller {
     this._messageCorrelations = {};
   }
 
+  public destroy(): void {
+    super.destroy();
+  }
+
   protected call(
     name: string,
     parameters: any[],
-    callback?: GlueCallback,
+    callback?: Callback,
   ): Promise<any> | void {
     const message = new Message({
       name,
@@ -32,15 +36,15 @@ export abstract class GlueCaller extends Controller {
       type: MessageType.Request,
     });
 
-    const correlations = this._getCorrelations(message.correlationId);
+    const correlation = this._getCorrelation(message.correlationId);
     if (callback) {
-      correlations.callback = callback;
+      correlation.callback = callback;
     }
 
     this._targetWindow.postMessage(message, this._targetWindow.location.origin);
 
     return new Promise((resolve) => {
-      correlations.response = resolve;
+      correlation.response = resolve;
     });
   }
 
@@ -49,18 +53,18 @@ export abstract class GlueCaller extends Controller {
       return;
     }
 
-    const correlations = this._getCorrelations(message.correlationId);
+    const correlation = this._getCorrelation(message.correlationId);
 
-    if (message.type === MessageType.Respond && correlations.response) {
-      correlations.response(message.payload);
+    if (message.type === MessageType.Respond && correlation.response) {
+      correlation.response(message.payload);
     }
 
-    if (message.type === MessageType.Callback && correlations.callback) {
-      correlations.callback(message.payload);
+    if (message.type === MessageType.Callback && correlation.callback) {
+      correlation.callback(message.payload);
     }
   }
 
-  private _getCorrelations(id: string): MessageCorrelation {
+  private _getCorrelation(id: string): MessageCorrelation {
     if (!this._messageCorrelations[id]) {
       this._messageCorrelations[id] = {};
     }

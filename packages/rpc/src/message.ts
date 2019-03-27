@@ -6,8 +6,6 @@ export enum MessageType {
   Callback = 'callback',
 }
 
-const PROTOCOL_NAME = 'readium-glue';
-
 type NewMessage = Partial<Message> & {
   type: MessageType;
   namespace: string,
@@ -33,11 +31,5 @@ export class Message {
     this.payload = newMessage.payload;
 
     this.correlationId = newMessage.correlationId || uuid();
-
-    this.protocol = PROTOCOL_NAME;
-  }
-
-  public static validate(message: Message): boolean {
-    return !!message.protocol && message.protocol === PROTOCOL_NAME;
   }
 }

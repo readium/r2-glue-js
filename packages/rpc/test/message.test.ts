@@ -18,10 +18,3 @@ test('message uses provided correlation identifier', () => {
 
   expect(messageWithCorrelationId.correlationId).toBe('foobar');
 });
-
-test('validates message', () => {
-  const invalidMessage = { fruit: 'banana' };
-  // @ts-ignore
-  expect(Message.validate(invalidMessage)).toBe(false);
-  expect(Message.validate(testMessage)).toBe(true);
-});
