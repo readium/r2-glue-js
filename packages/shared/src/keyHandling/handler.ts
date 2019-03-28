@@ -61,7 +61,7 @@ export class KeyHandler extends Service {
   }
 
   private async _addKeyEventListener(
-    callback: GlueCallback,
+    callback: Callback,
     target: string,
     eventType: KeyEventType,
     keyCode?: string,
