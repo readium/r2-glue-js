@@ -1,0 +1,15 @@
+dist: xenial
+addons:
+  chrome: stable
+  firefox: latest
+branches:
+  only:
+  - master
+language: node_js
+node_js: lts/*
+env:
+- MOZ_HEADLESS=1
+install:
+- npm install
+script:
+- npm run test
