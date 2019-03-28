@@ -1,7 +1,4 @@
 dist: xenial
-addons:
-  chrome: stable
-  firefox: latest
 branches:
   only:
   - master
@@ -19,4 +16,7 @@ jobs:
     - stage: build
       script: npm run build
     - stage: test
+      addons:
+        chrome: stable
+        firefox: latest
       script: npm run test
