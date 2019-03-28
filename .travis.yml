@@ -11,7 +11,11 @@ env:
 - MOZ_HEADLESS=1
 install:
 - npm install
-script:
-- npm run lint
-- npm run build
-- npm run test
+jobs:
+  include:
+    - stage: lint
+      script: npm run lint
+    - stage: build
+      script: npm run build
+    - stage: test
+      script: npm run test
