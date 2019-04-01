@@ -17,7 +17,7 @@ export class EventHandling extends Caller {
       EventHandlingMessage.AddEventListener,
       [target, eventType, properties, options],
       (event) => {
-        listener(event);
+        listener(event[0]);
       },
     );
   }
