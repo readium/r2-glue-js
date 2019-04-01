@@ -1,5 +1,6 @@
 export enum KeyHandlingMessage {
   AddKeyEventListener = 'ADD_KEY_EVENT_LISTENER',
+  RemoveKeyEventListener = 'REMOVE_KEY_EVENT_LISTENER',
 }
 
 export type KeyEventType = 'keydown' | 'keypress' | 'keyup';
@@ -9,4 +10,6 @@ export interface IAddKeyListenerOptions {
   stopPropagation?: boolean;
   stopImmediatePropagation?: boolean;
   once?: boolean;
+  keyCode?: number;
+  listenerId?: string;
 }

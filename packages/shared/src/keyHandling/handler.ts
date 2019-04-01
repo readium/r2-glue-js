@@ -27,6 +27,7 @@ export class KeyHandler extends Service {
     super(messageSource);
 
     messageSource.bind(KeyHandlingMessage.AddKeyEventListener, this._addKeyEventListener);
+    messageSource.bind(KeyHandlingMessage.RemoveKeyEventListener, this._removeKeyEventListener);
 
     const keyboardEventHandler = (event: KeyboardEvent) => {
       if (event.defaultPrevented) {
@@ -35,7 +36,7 @@ export class KeyHandler extends Service {
       }
 
       const matchingKeyHandlerSet = [
-        ...(this.registeredKeyHandlers[event.key] || []),
+        ...(this.registeredKeyHandlers[event.keyCode] || []),
         ...this.registeredAnyKeyHandlers,
       ];
 
@@ -62,19 +63,36 @@ export class KeyHandler extends Service {
 
   private async _addKeyEventListener(
     callback: Callback,
-    target: string,
     eventType: KeyEventType,
-    keyCode?: string,
     options: IAddKeyListenerOptions = {},
   ): Promise<void> {
     const handlerInfo = { eventType, callback, options };
-    if (keyCode) {
-      if (!this.registeredKeyHandlers[keyCode]) {
-        this.registeredKeyHandlers[keyCode] = [];
+    if (options.keyCode) {
+      if (!this.registeredKeyHandlers[options.keyCode]) {
+        this.registeredKeyHandlers[options.keyCode] = [];
       }
-      this.registeredKeyHandlers[keyCode].push(handlerInfo);
+      this.registeredKeyHandlers[options.keyCode].push(handlerInfo);
     } else {
       this.registeredAnyKeyHandlers.push(handlerInfo);
+    }
+  }
+
+  private async _removeKeyEventListener(
+    callback: Callback,
+    name: string,
+  ): Promise<void> {
+    const searcher = (x: any) => { return x.options.listenerId === name; };
+    for (const [_k, v] of Object.entries(this.registeredKeyHandlers)) {
+      let idx = v.findIndex(searcher);
+      while (idx >= 0) {
+        v.splice(idx, 1);
+        idx = v.findIndex(searcher);
+      }
+    }
+    let idx = this.registeredAnyKeyHandlers.findIndex(searcher);
+    while (idx >= 0) {
+      this.registeredAnyKeyHandlers.splice(idx, 1);
+      idx = this.registeredAnyKeyHandlers.findIndex(searcher);
     }
   }
 }

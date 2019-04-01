@@ -7,18 +7,20 @@ export class KeyHandling extends Caller {
   }
 
   public addKeyEventListener(
-    target: string,
     eventType: string,
-    keyCode: string,
     listener: EventListener,
     options: IAddKeyListenerOptions = {},
   ): void {
     this.call(
       KeyHandlingMessage.AddKeyEventListener,
-      [target, eventType, keyCode, options],
+      [eventType, options],
       (event) => {
-        listener(event);
+        listener(event[0]);
       },
     );
+  }
+
+  public removeKeyEventListener(name: string): void {
+    this.call(KeyHandlingMessage.RemoveKeyEventListener, [name]);
   }
 }

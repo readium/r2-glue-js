@@ -1,20 +1,16 @@
+window.r2glue = window.r2glue || {};
+
 document.addEventListener("DOMContentLoaded", function(event) {
   var frame = document.getElementById("page"),
       testPicker = document.getElementById("testPicker");
 
-  var updateSrc = function(url) {
-    var prefix = "src/";
-    frame.src = prefix + url;
-    frame.onload = function() {
-      var script = frame.contentDocument.createElement("script");
-      script.setAttribute("src", "/dist/glue-embed.js");
-      frame.contentDocument.head.appendChild(script);
-      var script = frame.contentDocument.createElement("script");
-      script.setAttribute("src", "/dist/glue-caller.js");
-      frame.contentDocument.head.appendChild(script);
-    }
-  }
+  // RPC services
+  var clickRPCCaller = new ReadiumGlue.EventHandling(frame.contentWindow);
+  window.r2glue.clickRPCCaller = clickRPCCaller;
+  var keyRPCCaller = new ReadiumGlue.KeyHandling(frame.contentWindow);
+  window.r2glue.keyRPCCaller = keyRPCCaller;
 
+  // Shared scrolling functions
   var scrollLeft = function() {
     var gap = parseInt(window.getComputedStyle(frame.contentWindow.document.documentElement).getPropertyValue("column-gap"));
     frame.contentWindow.scrollTo(frame.contentWindow.scrollX - frame.contentWindow.innerWidth - gap, 0);
@@ -25,6 +21,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     frame.contentWindow.scrollTo(frame.contentWindow.scrollX + frame.contentWindow.innerWidth + gap, 0);
   };
 
+  // Key event handler
+  var keydownHandlerFn = function(e) {
+    if (e.key == "ArrowRight") {
+      scrollRight();
+    } else if (e.key == "ArrowLeft") {
+      scrollLeft();
+    }
+  };
+  document.body.addEventListener('keydown', keydownHandlerFn);
+
+  // Click event handler
   document.body.addEventListener('click', function(e) {
     e.preventDefault();
     if (e.clientX > (window.innerWidth / 2)) {
@@ -33,13 +40,35 @@ document.addEventListener("DOMContentLoaded", function(event) {
       scrollLeft();
     }
   });
-  document.body.addEventListener('keydown', function(e) {
-    if (e.keyCode == "39") {
-      scrollRight();
-    } else if (e.keyCode == "37") {
-      scrollLeft();
+
+  // Updating iFrame
+  var updateSrc = function(url) {
+    var prefix = "src/";
+    frame.src = prefix + url;
+    frame.onload = function() {
+      var script = frame.contentDocument.createElement("script");
+      script.setAttribute("src", "/dist/glue-embed.js");
+      frame.contentDocument.head.appendChild(script);
+      script = frame.contentDocument.createElement("script");
+      script.setAttribute("src", "/dist/glue-caller.js");
+      frame.contentDocument.head.appendChild(script);
+
+      // Bind listeners
+      script.onload = function() {
+        clickRPCCaller.addEventListener('body', 'click', ['clientX'], function(e) {
+          if (e.clientX > (window.innerWidth / 2)) {
+            scrollRight();
+          } else {
+            scrollLeft();
+          }
+        },
+        {
+          preventDefault: true
+        });
+        keyRPCCaller.addKeyEventListener('keydown', keydownHandlerFn, { listenerId: 'demo-script-keyhandler' });
+      }
     }
-  });
+  }
 
   if (testPicker) {
     testPicker.addEventListener("change", function(e) {
