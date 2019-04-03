@@ -7,4 +7,6 @@ export interface IAddEventListenerOptions extends AddEventListenerOptions {
   preventDefault?: boolean;
   stopPropagation?: boolean;
   stopImmediatePropagation?: boolean;
+  properties?: string[];
+  target?: string;
 }

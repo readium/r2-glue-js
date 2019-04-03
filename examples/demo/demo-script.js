@@ -55,17 +55,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
       // Bind listeners
       script.onload = function() {
-        clickRPCCaller.addEventListener('body', 'click', ['clientX'], function(e) {
-          if (e.clientX > (window.innerWidth / 2)) {
+        clickRPCCaller.addEventListener('click', function(e) {
+          var frameWidth = frame.offsetWidth;
+          if (e.clientX > (frameWidth / 2)) {
             scrollRight();
           } else {
             scrollLeft();
           }
-        },
-        {
-          preventDefault: true
+        }, {
+          preventDefault: true,
+          target: 'body',
+          properties: ['clientX']
         });
-        keyRPCCaller.addKeyEventListener('keydown', keydownHandlerFn, { listenerId: 'demo-script-keyhandler' });
+        keyRPCCaller.addKeyEventListener('keydown', keydownHandlerFn);
       }
     }
   }
