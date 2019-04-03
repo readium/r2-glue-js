@@ -7,17 +7,15 @@ export class EventHandling extends Caller {
   }
 
   public async addEventListener(
-    target: string,
     eventType: string,
-    properties: string[],
     listener: EventListener,
     options: IAddEventListenerOptions = {},
   ): Promise<number> {
     return this.call(
       EventHandlingMessage.AddEventListener,
-      [target, eventType, properties, options],
-      (event) => {
-        listener(event[0]);
+      [eventType, options],
+      (payload) => {
+        listener(payload[0]);
       },
     );
   }

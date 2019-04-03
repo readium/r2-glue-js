@@ -10,6 +10,5 @@ export interface IAddKeyListenerOptions {
   stopPropagation?: boolean;
   stopImmediatePropagation?: boolean;
   once?: boolean;
-  keyCode?: number;
-  listenerId?: string;
+  target?: string;
 }
