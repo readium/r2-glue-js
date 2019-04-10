@@ -42,7 +42,8 @@
       "check-format",
       "allow-leading-underscore",
       "allow-trailing-underscore"
-    ]
+    ],
+    "align": false
   },
   "rulesDirectory": [],
   "linterOptions": {
