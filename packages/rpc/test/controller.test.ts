@@ -4,6 +4,7 @@ import { testMessage } from './message.test';
 import Mock = jest.Mock;
 
 window.addEventListener = jest.fn();
+window.removeEventListener = jest.fn();
 
 class TestController extends Controller {
   constructor(namespace: string) {
@@ -16,7 +17,7 @@ class TestController extends Controller {
 const testController = new TestController(testMessage.namespace);
 
 test('adds message event listener', () => {
-  expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+  expect(window.addEventListener).toBeCalledWith('message', expect.any(Function));
 });
 
 describe('processing and responding to messages', () => {
@@ -25,7 +26,7 @@ describe('processing and responding to messages', () => {
   test('should process message', () => {
     testController.processMessage = jest.fn();
     testListener({ data: testMessage } as MessageEvent);
-    expect(testController.processMessage).toHaveBeenCalledWith(testMessage, expect.any(Function));
+    expect(testController.processMessage).toBeCalledWith(testMessage, expect.any(Function));
   });
 
   test('should not process an invalid message', () => {
@@ -61,5 +62,10 @@ describe('processing and responding to messages', () => {
 
     const actualPostedMessage: Message = postMessageCall.mock.calls[0][0];
     expect(actualPostedMessage).toMatchObject(postedMessage);
+  });
+
+  test('removes event listener on destroy', () => {
+    testController.destroy();
+    expect(window.removeEventListener).toBeCalledWith('message', expect.any(Function));
   });
 });
