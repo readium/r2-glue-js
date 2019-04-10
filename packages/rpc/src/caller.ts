@@ -20,10 +20,6 @@ export abstract class Caller extends Controller {
     this._messageCorrelations = {};
   }
 
-  public destroy(): void {
-    super.destroy();
-  }
-
   protected call(
     name: string,
     parameters: any[],

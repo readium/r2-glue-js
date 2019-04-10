@@ -41,7 +41,7 @@ export abstract class Controller {
 
   protected abstract processMessage(message: Message, sendMessage: SendMessageFunction): void;
 
-  protected destroy(): void {
+  public destroy(): void {
     window.removeEventListener('message', this._onMessage);
   }
 }
