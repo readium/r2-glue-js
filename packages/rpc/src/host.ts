@@ -5,7 +5,7 @@ import { SendMessageFunction, Controller } from './controller';
 export class Host extends Controller {
   private readonly _callHandlingService: Service;
 
-  private readonly _registeredCallHandlers: { [key: string]: CallHandler[] } = {};
+  private _registeredCallHandlers: { [key: string]: CallHandler[] } = {};
 
   public constructor(namespace: string, service: ServiceConstructor) {
     super(namespace);
@@ -40,6 +40,7 @@ export class Host extends Controller {
   }
 
   public destroy(): void {
+    this._registeredCallHandlers = {};
     super.destroy();
   }
 
