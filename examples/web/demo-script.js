@@ -43,8 +43,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   // Updating iFrame
   var updateSrc = function(url) {
-    var prefix = "src/";
-    frame.src = prefix + url;
+    frame.src = url;
     frame.onload = function() {
       var script = frame.contentDocument.createElement("script");
       script.setAttribute("src", "/dist/glue-embed.js");
