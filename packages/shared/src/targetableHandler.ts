@@ -12,8 +12,11 @@ export class TargetableHandler extends Service {
   private lastUsedID: number = 0;
   private registeredEventListenerRemovers: { [id: number]: Function[] } = {};
 
-  // tslint:disable-next-line:max-line-length
-  protected registerListenerForTargets(target: string, type: string, listener: EventListener): number {
+  protected registerListenerForTargets(
+    target: string,
+    type: string,
+    listener: EventListener,
+  ): number {
     const targets = resolveEventTargetSelector(target);
     const listenerRemovers = targets.map((resolvedTarget: EventTarget) => {
       resolvedTarget.addEventListener(type, listener);
@@ -26,8 +29,11 @@ export class TargetableHandler extends Service {
     return this.lastUsedID;
   }
 
-  // tslint:disable-next-line:max-line-length
-  protected registerListenerForEachTarget(target: string, type: string, generator: EventListenerGenerator): number {
+  protected registerListenerForEachTarget(
+    target: string,
+    type: string,
+    generator: EventListenerGenerator,
+  ): number {
     const targets = resolveEventTargetSelector(target);
     const listenerRemovers = targets.map((resolvedTarget: EventTarget) => {
       const listener = generator(resolvedTarget);

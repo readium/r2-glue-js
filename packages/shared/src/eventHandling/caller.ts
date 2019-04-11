@@ -11,13 +11,9 @@ export class EventHandling extends Caller {
     listener: EventListener,
     options: IAddEventListenerOptions = {},
   ): Promise<number> {
-    return this.call(
-      EventHandlingMessage.AddEventListener,
-      [eventType, options],
-      (payload) => {
-        listener(payload[0]);
-      },
-    );
+    return this.call(EventHandlingMessage.AddEventListener, [eventType, options], (payload) => {
+      listener(payload[0]);
+    });
   }
 
   public removeEventListener(listenerID: number): void {

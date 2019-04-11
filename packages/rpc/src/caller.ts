@@ -20,11 +20,7 @@ export abstract class Caller extends Controller {
     this._messageCorrelations = {};
   }
 
-  protected call(
-    name: string,
-    parameters: any[],
-    callback?: Callback,
-  ): Promise<any> | void {
+  protected call(name: string, parameters: any[], callback?: Callback): Promise<any> | void {
     const message = new Message({
       name,
       payload: parameters,

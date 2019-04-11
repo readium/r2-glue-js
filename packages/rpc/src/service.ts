@@ -2,7 +2,7 @@ export type Callback = (...params: any[]) => void;
 
 export type CallHandler = (callback: Callback, ...params: any[]) => Promise<any>;
 
-export type CallHandlerList = { [name: string] : CallHandler };
+export type CallHandlerList = { [name: string]: CallHandler };
 
 export interface CallSource {
   bind(name: string, handler: CallHandler): void;

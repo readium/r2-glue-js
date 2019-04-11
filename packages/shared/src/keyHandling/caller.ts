@@ -11,13 +11,9 @@ export class KeyHandling extends Caller {
     listener: EventListener,
     options: IAddKeyListenerOptions = {},
   ): Promise<number> {
-    return this.call(
-      KeyHandlingMessage.AddKeyEventListener,
-      [eventType, options],
-      (payload) => {
-        listener(payload[0]);
-      },
-    );
+    return this.call(KeyHandlingMessage.AddKeyEventListener, [eventType, options], (payload) => {
+      listener(payload[0]);
+    });
   }
 
   public removeKeyEventListener(id: number): void {

@@ -8,7 +8,7 @@ export enum MessageType {
 
 type NewMessage = Partial<Message> & {
   type: MessageType;
-  namespace: string,
+  namespace: string;
   name: string;
   payload: any;
 };

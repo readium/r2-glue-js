@@ -33,7 +33,7 @@ export class EventHandler extends TargetableHandler {
     return this.registerListenerForTargets(target, eventType, listener);
   }
 
-  private async _removeEventListener({}: Callback, listenerID: number): Promise<void> {
+  private async _removeEventListener(_callback: Callback, listenerID: number): Promise<void> {
     this.removeEventListeners(listenerID);
   }
 }
