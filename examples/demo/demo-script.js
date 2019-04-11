@@ -48,10 +48,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     frame.onload = function() {
       var script = frame.contentDocument.createElement("script");
       script.setAttribute("src", "/dist/glue-embed.js");
+      var script2 = frame.contentDocument.createElement("script");
+      script2.setAttribute("src", "/dist/glue-caller.js");
       frame.contentDocument.head.appendChild(script);
-      script = frame.contentDocument.createElement("script");
-      script.setAttribute("src", "/dist/glue-caller.js");
-      frame.contentDocument.head.appendChild(script);
+      frame.contentDocument.head.appendChild(script2);
 
       // Bind listeners
       script.onload = function() {
