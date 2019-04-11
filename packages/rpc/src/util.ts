@@ -35,8 +35,9 @@ export function generateEventTargetSelector(eventTarget: EventTarget): string | 
   if (eventTarget === document) {
     return '@document';
   }
-  if (eventTarget instanceof Element) {
+  const node = eventTarget as Node;
+  if (node.nodeType === Node.ELEMENT_NODE) {
     // Generate a CSS selector for the Element
-    return finder(eventTarget);
+    return finder(<Element>eventTarget);
   }
 }

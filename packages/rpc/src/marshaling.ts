@@ -34,7 +34,7 @@ export function marshalEvent(event: Event, enumeratedProperties: string[] = []):
 export function marshalObject(obj: any): any {
   return JSON.parse(
     JSON.stringify(obj, (key, value) => {
-      if (isEventTarget(value)) {
+      if (value && isEventTarget(value)) {
         return generateEventTargetSelector(value);
       }
       return value;
