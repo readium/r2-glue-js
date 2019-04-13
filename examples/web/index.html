@@ -1,67 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Test</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <style type="text/css">
-    html, body {
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box;
-      -webkit-text-size-adjust: 100%;
-    }
-    
-    body {
-      display: flex;
-      height: 100vh;
-      width: 100%;
-      align-items: center;
-      justify-content: center;
-      padding: 30px 0 0 0;
-    }
-    
-    iframe {
-      width: calc(60em + 40px);
-      max-width: 90%;
-      height: 90vh;
-      max-height: 100%;
-      border: 0;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      /* May help later with Reading modes so that bg can be applied to whole page
-         You need to allowtransparency on the iframe though (and sanitize authors’ CSS) */
-      background-color: transparent;
-    }
-    @media screen and (min-device-width: 576px) {
-      iframe {
-        max-width: 95%;
+  <head>
+    <title>Test</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <style type="text/css">
+      body {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 0 0 0;
       }
-    }
-    select {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-    }
-  </style>
-</head>
-<body>
-  <select id="testPicker">
-      <option value="../common/html/test-000.xhtml" selected="">Sample content</option>
-      <option value="../common/html/test-001.xhtml">Form elements</option>
-      <option value="../common/html/test-002.xhtml">Contenteditable div</option>
-      <option value="../common/html/test-003.xhtml">Scripted form element</option> 
-      <option value="../common/html/test-004.xhtml">Audio controls with div</option> 
-      <option value="../common/html/test-005.xhtml">Audio controls with buttons</option> 
-      <option value="../common/html/test-006.xhtml">Links</option> 
-      <option value="../common/html/test-007.xhtml">Layout change</option> 
-      <option value="../common/html/test-008.xhtml">Details element</option> 
-      <option value="../common/html/test-009.xhtml">Canvas interaction</option> 
-  </select>
-  <iframe id="page" allowtransparency="true" scrolling="no"></iframe>
-  <script type="text/javascript" src="/dist/glue-caller.js"></script>
-  <script type="text/javascript" src="demo-script.js"></script>
-</body>
+
+      iframe {
+        width: calc(90em + 40px);
+        max-width: 90%;
+        height: 90vh;
+        max-height: 100%;
+        border: 0;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        /* May help later with Reading modes so that bg can be applied to whole page
+         You need to allowtransparency on the iframe though (and sanitize authors’ CSS) */
+        background-color: transparent;
+      }
+      @media screen and (min-device-width: 576px) {
+        iframe {
+          max-width: 95%;
+        }
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="/node_modules/semantic-ui-css/semantic.css" />
+    <link rel="stylesheet" type="text/css" href="/node_modules/semantic-ui-sidebar/sidebar.css" />
+    <script src="/node_modules/jquery/dist/jquery.js"></script>
+    <script src="/node_modules/semantic-ui-css/semantic.js"></script>
+    <script src="/node_modules/semantic-ui-sidebar/sidebar.js"></script>
+    <script>
+      $(function() {
+        $('.ui.dropdown').dropdown();
+
+        $('.ui.button.toggle').on('click', function() {
+          $(this).toggleClass('active');
+        });
+
+        $('#contentSelectMenu').sidebar('setting', 'transition', 'overlay');
+
+        $('#contentSelectMenuToggle').click(function() {
+          $('#contentSelectMenu').sidebar('toggle');
+        });
+
+        $('#contentSelectMenu a').click(function() {
+          $('#contentSelectMenu').sidebar('hide');
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="contentSelectMenu" class="ui left vertical menu sidebar">
+      <a class="item" value="../common/html/test-000.xhtml">Sample content</a>
+      <a class="item" value="../common/html/test-001.xhtml">Form elements</a>
+      <a class="item" value="../common/html/test-002.xhtml">Contenteditable div</a>
+      <a class="item" value="../common/html/test-003.xhtml">Scripted form element</a>
+      <a class="item" value="../common/html/test-004.xhtml">Audio controls with div</a>
+      <a class="item" value="../common/html/test-005.xhtml">Audio controls with buttons</a>
+      <a class="item" value="../common/html/test-006.xhtml">Links</a>
+      <a class="item" value="../common/html/test-007.xhtml">Layout change</a>
+      <a class="item" value="../common/html/test-008.xhtml">Details element</a>
+      <a class="item" value="../common/html/test-009.xhtml">Canvas interaction</a>
+    </div>
+    <div class="pusher">
+      <div class="ui bottom attached inverted menu">
+        <a id="contentSelectMenuToggle" class="ui item">
+          Switch content
+        </a>
+      </div>
+      <iframe id="page" allowtransparency="true" scrolling="no"></iframe>
+    </div>
+
+    <script type="text/javascript" src="/dist/glue-caller.js"></script>
+    <script type="text/javascript" src="demo-script.js"></script>
+  </body>
 </html>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Glue Android Example</string>
+    <string-array name="testPicker_array">
+        <item>Sample content</item>
+        <item>Form elements</item>
+        <item>Contenteditable div</item>
+        <item>Scripted form element</item>
+        <item>Audio controls with div</item>
+        <item>Audio controls with buttons</item>
+        <item>Links</item>
+        <item>Layout change</item>
+        <item>Details element</item>
+        <item>Canvas interaction</item>
+    </string-array>
+
+</resources>
