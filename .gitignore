@@ -2,6 +2,7 @@
 .idea
 node_modules
 .rpt2_cache
+*.tsbuildinfo
 coverage
 lib
 dist
