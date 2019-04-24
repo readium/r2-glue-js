@@ -1,6 +1,9 @@
 {
   "name": "@readium/glue-shared",
   "version": "1.0.0",
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "@readium/glue-rpc": "^1.0.0"
   }
