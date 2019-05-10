@@ -1,13 +1,12 @@
 {
-  "name": "@readium/glue-shared",
+  "name": "@readium/glue-modules",
   "version": "1.1.0",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
   "files": [
     "lib"
   ],
   "dependencies": {
-    "@medv/finder": "^1.1.1"
+    "@readium/glue-rpc": "^1.1.0",
+    "@readium/glue-shared": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"

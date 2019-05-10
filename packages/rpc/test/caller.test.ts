@@ -1,5 +1,6 @@
+import { Callback } from '@readium/glue-shared';
+
 import { Caller } from '../src/caller';
-import { Callback } from '../src/service';
 import { Message, MessageType } from '../src/message';
 
 type PartialMessage = Partial<Message> & {

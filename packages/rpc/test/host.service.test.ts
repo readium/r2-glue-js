@@ -1,5 +1,6 @@
+import { CallSource, Callback, CallHandler } from '@readium/glue-shared';
+
 import { Host } from '../src/host';
-import { CallSource, Callback, CallHandler } from '../src/service';
 import { MessageType, Message } from '../src/message';
 import { SendMessageFunction } from '../src/controller';
 

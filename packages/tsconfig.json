@@ -2,7 +2,8 @@
   "files": [],
   "include": [],
   "references": [
+    { "path": "shared" },
     { "path": "rpc" },
-    { "path": "shared" }
+    { "path": "modules" }
   ]
 }

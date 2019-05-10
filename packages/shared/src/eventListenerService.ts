@@ -1,13 +1,10 @@
-import { Service, CallSource } from '@readium/glue-rpc';
+import { Service } from './service';
 
-import { resolveEventTargetSelector } from '@readium/glue-rpc/lib/util';
+import { resolveEventTargetSelector } from './util';
 
 export type EventListenerGenerator = (target: EventTarget) => EventListener;
 
-export class TargetableHandler extends Service {
-  constructor(source: CallSource) {
-    super(source);
-  }
+export abstract class EventListenerService extends Service {
 
   private lastUsedID: number = 0;
   private registeredEventListenerRemovers: { [id: number]: Function[] } = {};

@@ -1,10 +1,8 @@
-import { Callback, CallSource } from '@readium/glue-rpc';
+import { Callback, CallSource, marshalEvent, EventListenerService } from '@readium/glue-shared';
 
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
-import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
-import { TargetableHandler } from '../targetableHandler';
 
-export class EventHandler extends TargetableHandler {
+export class EventHandling extends EventListenerService {
   constructor(source: CallSource) {
     super(source);
     source.bind(EventHandlingMessage.AddEventListener, this._addEventListener);

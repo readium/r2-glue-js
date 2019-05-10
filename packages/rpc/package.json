@@ -7,7 +7,7 @@
     "lib"
   ],
   "dependencies": {
-    "@medv/finder": "^1.1.1"
+    "@readium/glue-shared": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"

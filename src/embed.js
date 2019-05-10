@@ -1,1 +1,1 @@
-import '../packages/shared/lib/handlers';
+import '../packages/modules/lib/services';

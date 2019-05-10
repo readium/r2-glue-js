@@ -1,7 +1,6 @@
-import { Callback, CallSource } from '@readium/glue-rpc';
+import { Callback, CallSource, marshalEvent, EventListenerService } from '@readium/glue-shared';
+
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
-import { marshalEvent } from '@readium/glue-rpc/lib/marshaling';
-import { TargetableHandler } from '../targetableHandler';
 
 interface IRegisteredKeyHandler {
   eventType: KeyEventType;
@@ -20,7 +19,7 @@ const KEYBOARD_EVENT_PROPERTIES = [
   'isComposing',
 ];
 
-export class KeyHandler extends TargetableHandler {
+export class KeyHandling extends EventListenerService {
   constructor(messageSource: CallSource) {
     super(messageSource);
 

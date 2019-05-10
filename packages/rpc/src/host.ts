@@ -1,5 +1,6 @@
+import { ServiceConstructor, Service, CallHandler, CallHandlerList } from '@readium/glue-shared';
+
 import { Message, MessageType } from './message';
-import { ServiceConstructor, Service, CallHandler, CallHandlerList } from './service';
 import { SendMessageFunction, Controller } from './controller';
 
 export class Host extends Controller {

@@ -1,4 +1,5 @@
 import { Caller } from '@readium/glue-rpc';
+
 import { EventHandlingMessage, IAddEventListenerOptions } from './interface';
 
 export class EventHandling extends Caller {

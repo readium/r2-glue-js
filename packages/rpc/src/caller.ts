@@ -1,4 +1,5 @@
-import { Callback } from './service';
+import { Callback } from '@readium/glue-shared';
+
 import { Controller } from './controller';
 import { Message, MessageType } from './message';
 
