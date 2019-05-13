@@ -1,4 +1,4 @@
-import { CallSource, Callback, CallHandler } from '@readium/glue-shared';
+import { CallSource, Callback, CallHandler } from '../../shared/src';
 
 import { Host } from '../src/host';
 import { MessageType, Message } from '../src/message';

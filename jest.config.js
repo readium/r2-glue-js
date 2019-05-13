@@ -13,7 +13,7 @@ module.exports = {
   collectCoverage: true,
   globals: {
     'ts-jest': {
-      tsConfig: 'packages/tsconfig.options.json'
+      tsConfig: 'packages/tsconfig.json'
     }
   }
 };
