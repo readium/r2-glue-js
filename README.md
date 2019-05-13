@@ -1,4 +1,4 @@
-# Readium-2 Glue JS
+# Readium-2 Glue JS [![Build Status](https://travis-ci.com/readium/r2-glue-js.svg?branch=master)](https://travis-ci.com/readium/r2-glue-js)
 This repo contains Javascript resources that are injected by a Readium-2 streamer or navigator.
 
 This is a first draft of how this could be broken down:
