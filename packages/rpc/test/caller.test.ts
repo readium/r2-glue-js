@@ -1,4 +1,4 @@
-import { Callback } from '../../shared/src';
+import { Callback } from '@readium/glue-shared';
 
 import { Caller } from '../src/caller';
 import { Message, MessageType } from '../src/message';
