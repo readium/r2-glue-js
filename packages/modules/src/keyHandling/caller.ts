@@ -3,10 +3,6 @@ import { Caller } from '@readium/glue-rpc';
 import { KeyHandlingMessage, IAddKeyListenerOptions } from './interface';
 
 export class KeyHandling extends Caller {
-  public constructor(targetWindow: Window) {
-    super('key-handling', targetWindow);
-  }
-
   public async addKeyEventListener(
     eventType: string,
     listener: EventListener,

@@ -1,2 +1,2 @@
-export { default as eventHandling } from './eventHandling';
-export { default as keyHandling } from './keyHandling';
+export * from './eventHandling/service';
+export * from './keyHandling/service';

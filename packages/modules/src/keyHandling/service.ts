@@ -2,12 +2,6 @@ import { Callback, CallSource, marshalEvent, EventListenerService } from '@readi
 
 import { KeyHandlingMessage, IAddKeyListenerOptions, KeyEventType } from './interface';
 
-interface IRegisteredKeyHandler {
-  eventType: KeyEventType;
-  callback: Callback;
-  options: IAddKeyListenerOptions;
-}
-
 const KEYBOARD_EVENT_PROPERTIES = [
   'key',
   'code',
