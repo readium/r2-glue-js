@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
       testPicker = document.getElementById("testPicker");
 
   // RPC services
-  var clickRPCCaller = new ReadiumGlue.EventHandling(frame.contentWindow);
+  var clickRPCCaller = new ReadiumGlueCallers.EventHandling('event-handling', frame.contentWindow);
   window.r2glue.clickRPCCaller = clickRPCCaller;
-  var keyRPCCaller = new ReadiumGlue.KeyHandling(frame.contentWindow);
+  var keyRPCCaller = new ReadiumGlueCallers.KeyHandling('key-handling', frame.contentWindow);
   window.r2glue.keyRPCCaller = keyRPCCaller;
 
   // Shared scrolling functions
@@ -41,19 +41,45 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
   });
 
+  function createSyncScriptElement(doc, src) {
+    var script = doc.createElement('script');
+    script.async = false;
+    script.src = src;
+    return script;
+  }
+
   // Updating iFrame
   var updateSrc = function(url) {
     frame.src = url;
     frame.onload = function() {
-      var script = frame.contentDocument.createElement("script");
-      script.setAttribute("src", "/dist/glue-embed.js");
-      var script2 = frame.contentDocument.createElement("script");
-      script2.setAttribute("src", "/dist/glue-caller.js");
-      frame.contentDocument.head.appendChild(script);
-      frame.contentDocument.head.appendChild(script2);
+      frame.contentDocument.head.appendChild(
+        createSyncScriptElement(
+          frame.contentDocument,
+          '/packages/rpc/dist/ReadiumGlue-rpc.js',
+        ),
+      );
+      frame.contentDocument.head.appendChild(
+        createSyncScriptElement(
+          frame.contentDocument,
+          '/packages/shared/dist/ReadiumGlue-shared.js',
+        ),
+      );
+
+      frame.contentDocument.head.appendChild(
+        createSyncScriptElement(
+          frame.contentDocument,
+          '/packages/modules/dist/ReadiumGlue-services.js',
+        ),
+      );
+
+      var hostingScript = createSyncScriptElement(
+          frame.contentDocument,
+          '/examples/web/iframe-glue-hosting.js',
+        );
+      frame.contentDocument.head.appendChild(hostingScript);
 
       // Bind listeners
-      script.onload = function() {
+      hostingScript.onload = function() {
         clickRPCCaller.addEventListener('click', function(e) {
           var frameWidth = frame.offsetWidth;
           if (e.clientX > (frameWidth / 2)) {
@@ -62,12 +88,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
             scrollLeft();
           }
         }, {
-          preventDefault: true,
+          // preventDefault: true,
           target: 'body',
           properties: ['clientX']
         });
         keyRPCCaller.addKeyEventListener('keydown', keydownHandlerFn);
-      }
+      };
     }
   }
 
