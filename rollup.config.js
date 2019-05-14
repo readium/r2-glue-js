@@ -1,4 +1,3 @@
-
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import pkg from './package.json';
@@ -10,23 +9,53 @@ const plugins = [
 
 export default [
   {
-    input: 'src/embed.js',
+    input: 'packages/rpc/lib/index.js',
     output: {
-      name: 'ReadiumGlue',
-      file: './dist/glue-embed.js',
-      format: 'iife',
+      name: 'ReadiumGlueRPC',
+      file: './packages/rpc/dist/ReadiumGlue-rpc.js',
+      format: 'umd',
       sourcemap: true,
     },
     plugins,
   },
   {
-    input: 'src/caller.js',
+    input: 'packages/shared/lib/index.js',
     output: {
-      name: 'ReadiumGlue',
-      file: './dist/glue-caller.js',
-      format: 'iife',
+      name: 'ReadiumGlueShared',
+      file: './packages/shared/dist/ReadiumGlue-shared.js',
+      format: 'umd',
       sourcemap: true,
     },
+    plugins,
+  },
+  {
+    input: 'packages/modules/lib/callers.js',
+    output: {
+      name: 'ReadiumGlueCallers',
+      file: './packages/modules/dist/ReadiumGlue-callers.js',
+      format: 'umd',
+      sourcemap: true,
+      globals: {
+        '@readium/glue-rpc': 'ReadiumGlueRPC',
+        '@readium/glue-shared': 'ReadiumGlueShared',
+      },
+    },
+    external: ['@readium/glue-rpc', '@readium/glue-shared'],
+    plugins,
+  },
+  {
+    input: 'packages/modules/lib/services.js',
+    output: {
+      name: 'ReadiumGlueServices',
+      file: './packages/modules/dist/ReadiumGlue-services.js',
+      format: 'umd',
+      sourcemap: true,
+      globals: {
+        '@readium/glue-rpc': 'ReadiumGlueRPC',
+        '@readium/glue-shared': 'ReadiumGlueShared',
+      },
+    },
+    external: ['@readium/glue-rpc', '@readium/glue-shared'],
     plugins,
   },
 ];

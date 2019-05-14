@@ -1,10 +1,12 @@
 {
   "name": "@readium/glue-shared",
   "version": "1.2.0",
-  "main": "lib/index.js",
+  "main": "dist/ReadiumGlue-shared.js",
+  "module": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@medv/finder": "^1.1.1"
