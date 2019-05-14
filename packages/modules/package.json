@@ -1,14 +1,14 @@
 {
   "name": "@readium/glue-modules",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "main": "lib/callers.js",
   "typings": "lib/callers.d.ts",
   "files": [
     "lib"
   ],
   "dependencies": {
-    "@readium/glue-rpc": "^1.2.0",
-    "@readium/glue-shared": "^1.2.0"
+    "@readium/glue-rpc": "^1.3.0",
+    "@readium/glue-shared": "^1.3.0"
   },
   "publishConfig": {
     "access": "public"
