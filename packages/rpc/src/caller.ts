@@ -14,7 +14,7 @@ export abstract class Caller extends Controller {
 
   private readonly _messageCorrelations: { [id: string]: MessageCorrelation };
 
-  protected constructor(namespace: string, targetWindow: Window) {
+  constructor(namespace: string, targetWindow: Window) {
     super(namespace);
     this._namespace = namespace;
     this._targetWindow = targetWindow;
