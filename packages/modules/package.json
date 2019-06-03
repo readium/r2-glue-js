@@ -4,7 +4,8 @@
   "main": "lib/callers.js",
   "typings": "lib/callers.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "@readium/glue-rpc": "^1.3.1",
