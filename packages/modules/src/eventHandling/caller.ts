@@ -13,7 +13,7 @@ export class EventHandling extends Caller {
     });
   }
 
-  public removeEventListener(listenerID: number): void {
-    this.call(EventHandlingMessage.RemoveEventListener, [listenerID]);
+  public async removeEventListener(listenerID: number): Promise<void> {
+    return this.call(EventHandlingMessage.RemoveEventListener, [listenerID]);
   }
 }
