@@ -1,6 +1,6 @@
 {
   "name": "@readium/glue-rpc",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "dist/ReadiumGlue-rpc.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "dist"
   ],
   "dependencies": {
-    "@readium/glue-shared": "^1.4.0",
+    "@readium/glue-shared": "^1.4.1",
     "tslib": "^1.11.1"
   },
   "publishConfig": {

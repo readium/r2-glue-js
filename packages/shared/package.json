@@ -1,6 +1,6 @@
 {
   "name": "@readium/glue-shared",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "dist/ReadiumGlue-shared.js",
   "module": "lib/index.js",
   "typings": "lib/index.d.ts",
